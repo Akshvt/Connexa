@@ -11,7 +11,20 @@ import pipelineRoutes from './routes/pipeline.js';
 const app = express();
 
 // Middleware
-app.use(cors());
+const allowedOrigins = [
+  'http://localhost:5173',
+  'http://localhost:4173',
+  process.env.FRONTEND_URL,        // set on Render once you deploy the frontend
+].filter(Boolean);
+
+app.use(cors({
+  origin: (origin, callback) => {
+    // allow non-browser tools (Postman, Make.com) and listed origins
+    if (!origin || allowedOrigins.includes(origin)) return callback(null, true);
+    callback(new Error(`CORS: origin ${origin} not allowed`));
+  },
+  credentials: true,
+}));
 app.use(express.json());
 
 // MongoDB Connection
