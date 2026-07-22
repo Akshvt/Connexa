@@ -1,9 +1,10 @@
-const express = require('express');
-const router = express.Router();
+import express from 'express';
 
-const Lead = require('../models/Lead');
-const requireAuth = require('../middleware/requireAuth');
-const requirePipeline = require('../middleware/requirePipeline');
+import Lead from '../models/Lead.js';
+import requireAuth from '../middleware/requireAuth.js';
+import requirePipeline from '../middleware/requirePipeline.js';
+
+const router = express.Router();
 
 // ─── Helpers ──────────────────────────────────────────────────────────────────
 
@@ -183,4 +184,4 @@ router.delete('/:id', requireAuth, async (req, res) => {
   }
 });
 
-module.exports = router;
+export default router;

@@ -1,4 +1,4 @@
-module.exports = function requirePipeline(req, res, next) {
+export default function requirePipeline(req, res, next) {
   const secret = req.headers['x-pipeline-secret'];
 
   if (!secret || secret !== process.env.PIPELINE_SECRET) {
@@ -6,4 +6,4 @@ module.exports = function requirePipeline(req, res, next) {
   }
 
   next();
-};
+}

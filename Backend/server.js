@@ -1,12 +1,12 @@
-require('dotenv').config();
-const express = require('express');
-const mongoose = require('mongoose');
-const cors = require('cors');
+import 'dotenv/config';
+import express from 'express';
+import mongoose from 'mongoose';
+import cors from 'cors';
 
-const authRoutes = require('./routes/auth');
-const leadsRoutes = require('./routes/leads');
-const analyticsRoutes = require('./routes/analytics');
-const pipelineRoutes = require('./routes/pipeline');
+import authRoutes from './routes/auth.js';
+import leadsRoutes from './routes/leads.js';
+import analyticsRoutes from './routes/analytics.js';
+import pipelineRoutes from './routes/pipeline.js';
 
 const app = express();
 
@@ -39,4 +39,4 @@ app.listen(PORT, () => {
   console.log(`Server running on port ${PORT}`);
 });
 
-module.exports = app;
+export default app;

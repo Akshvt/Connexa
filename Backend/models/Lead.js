@@ -1,4 +1,4 @@
-const mongoose = require('mongoose');
+import mongoose from 'mongoose';
 
 const LeadSchema = new mongoose.Schema({
   fullName:       { type: String, default: '' },
@@ -34,4 +34,4 @@ LeadSchema.pre('save', async function () {
   this.lastUpdated = Date.now();
 });
 
-module.exports = mongoose.model('Lead', LeadSchema);
+export default mongoose.model('Lead', LeadSchema);

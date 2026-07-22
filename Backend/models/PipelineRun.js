@@ -1,4 +1,4 @@
-const mongoose = require('mongoose');
+import mongoose from 'mongoose';
 
 const PipelineRunSchema = new mongoose.Schema({
   startedAt:    { type: Date, default: Date.now },
@@ -12,4 +12,4 @@ const PipelineRunSchema = new mongoose.Schema({
   triggeredBy:  { type: String, enum: ['schedule', 'manual'], default: 'schedule' }
 });
 
-module.exports = mongoose.model('PipelineRun', PipelineRunSchema);
+export default mongoose.model('PipelineRun', PipelineRunSchema);

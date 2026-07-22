@@ -1,9 +1,9 @@
-const express = require('express');
-const bcrypt = require('bcryptjs');
-const jwt = require('jsonwebtoken');
+import express from 'express';
+import bcrypt from 'bcryptjs';
+import jwt from 'jsonwebtoken';
 
-const User = require('../models/User');
-const requireAuth = require('../middleware/requireAuth');
+import User from '../models/User.js';
+import requireAuth from '../middleware/requireAuth.js';
 
 const router = express.Router();
 
@@ -49,4 +49,4 @@ router.get('/me', requireAuth, (req, res) => {
   }
 });
 
-module.exports = router;
+export default router;
