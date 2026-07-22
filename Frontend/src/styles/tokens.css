@@ -1,0 +1,22 @@
+:root {
+  --color-bg: #0D1117;
+  --color-surface: #161B27;
+  --color-surface-2: #1E2436;
+  --color-border: #262D40;
+  --color-border-light: #1E2436;
+
+  --color-jade: #00C896;
+  --color-jade-dim: #00C89620;
+  --color-saffron: #F4A836;
+  --color-saffron-dim: #F4A83618;
+
+  --color-text-primary: #F0F2F7;
+  --color-text-secondary: #A0A8BC;
+  --color-text-muted: #5C6478;
+
+  --shadow-card: 0 0 0 1px var(--color-border), 0 2px 8px rgba(0,0,0,0.3);
+  --shadow-modal: 0 0 0 1px var(--color-border), 0 24px 48px rgba(0,0,0,0.5);
+}
+
+*, *::before, *::after { box-sizing: border-box; }
+body { margin: 0; background: var(--color-bg); color: var(--color-text-primary); font-family: 'Inter', sans-serif; }
