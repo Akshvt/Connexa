@@ -8,19 +8,18 @@ Namhya LeadFlow is an end-to-end system that automatically discovers potential d
 
 ## Screenshots
 
-> *(Add your screenshots in the root folder using these exact filenames)*
+> 📂 [View full screenshot gallery →](./docs/screenshots.md)
 
-| Screenshot | What to show |
+| | |
 |---|---|
-| `screenshot-login.png` | The login screen |
-| `screenshot-dashboard.png` | Full dashboard with leads loaded in the table |
-| `screenshot-filter.png` | Dashboard with the Country or Status filter open |
-| `screenshot-modal.png` | A lead's detail drawer open on the right side |
-| `screenshot-analytics.png` | The analytics page with all 4 charts visible |
-| `screenshot-pipeline.png` | The pipeline page showing the flow diagram + run history |
-| `screenshot-pulse-running.png` | The top bar while pipeline is running (pulsing jade dot) |
-| `screenshot-toast.png` | A toast notification appearing after pipeline completes |
-| `screenshot-make-scenario.png` | Your Make.com scenario canvas showing all 14 modules |
+| ![Login](./screenshot-login.png) | ![Dashboard](./screenshot-dashboard.png) |
+| *Login page* | *Leads dashboard* |
+| ![Filter](./screenshot-filter.png) | ![Modal](./screenshot-modal.png) |
+| *Filter bar open* | *Lead detail drawer* |
+| ![Analytics](./screenshot-analytics.png) | ![Pipeline](./screenshot-pipeline.png) |
+| *Analytics charts* | *Pipeline page* |
+| ![Pulse Running](./screenshot-pulse-running.png) | ![Make Scenario](./screenshot-make-scenario.png) |
+| *Pipeline Pulse bar — running state* | *Make.com scenario canvas* |
 
 ---
 
