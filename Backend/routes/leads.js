@@ -56,12 +56,16 @@ router.get('/check-duplicate', requirePipeline, async (req, res) => {
     }
     
     if (!exists && company && company.trim() !== '') {
-      // Fallback: fuzzy company name match
-      // Escape regex specials just in case, but keep it flexible
+      // More robust fuzzy match: match starting substring or exact
+      // Extract the first word or two to match if it's truncated
       const safeCompany = company.trim().replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
-      const companyRegex = new RegExp(safeCompany, 'i');
       
-      // If fullName is also provided, check both
+      // If the incoming company name is very long or truncated (e.g., ends in ...), just match the first few words
+      let searchPrefix = safeCompany.split(' ').slice(0, 2).join(' ');
+      if (!searchPrefix) searchPrefix = safeCompany;
+      
+      const companyRegex = new RegExp(searchPrefix, 'i');
+      
       if (fullName && fullName.trim() !== '') {
         const safeName = fullName.trim().replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
         exists = await Lead.exists({ 
@@ -209,6 +213,51 @@ router.get('/', requireAuth, async (req, res) => {
 // POST /api/leads  — requirePipeline (Make.com)
 router.post('/', requirePipeline, async (req, res) => {
   try {
+    const { email, company, fullName } = req.body;
+    let existingLead = null;
+
+    // 1. Check for duplicate by exact email
+    if (email && email.trim() !== '') {
+      existingLead = await Lead.findOne({ email: email.trim().toLowerCase() });
+    }
+
+    // 2. Check for duplicate by fuzzy company name (if no email match found)
+    if (!existingLead && company && company.trim() !== '') {
+      const safeCompany = company.trim().replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
+      // Match first two words to avoid long string mismatch issues
+      let searchPrefix = safeCompany.split(' ').slice(0, 2).join(' ');
+      if (!searchPrefix) searchPrefix = safeCompany;
+      
+      const companyRegex = new RegExp(searchPrefix, 'i');
+      
+      if (fullName && fullName.trim() !== '') {
+        const safeName = fullName.trim().replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
+        existingLead = await Lead.findOne({ 
+          company: { $regex: companyRegex },
+          fullName: { $regex: new RegExp(safeName, 'i') }
+        });
+      } else {
+        existingLead = await Lead.findOne({ company: { $regex: companyRegex } });
+      }
+    }
+
+    // If duplicate found, upsert missing fields instead of creating new
+    if (existingLead) {
+      let isUpdated = false;
+      for (const key in req.body) {
+        // If the incoming request has a value and the existing lead is empty or null, update it.
+        if (req.body[key] && (existingLead[key] === '' || existingLead[key] === null || existingLead[key] === undefined)) {
+          existingLead[key] = req.body[key];
+          isUpdated = true;
+        }
+      }
+      if (isUpdated) {
+        await existingLead.save();
+      }
+      return res.status(200).json({ success: true, lead: existingLead, note: 'Duplicate updated' });
+    }
+
+    // No duplicate found, create new
     const lead = await Lead.create(req.body);
     return res.status(201).json({ success: true, lead });
   } catch (err) {
