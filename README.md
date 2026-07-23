@@ -407,6 +407,8 @@ The architecture is intentionally modular. Everything below is a clean addition 
 
 ### **This is a functional MVP, not the final form. With more time, Connexa's UI can be rebuilt into a polished, branded SaaS experience, and the pipeline itself can scale to pull 200+ leads a month across new markets as Namhya grows global.**
 
+### **This is a functional MVP, not the final form. With more time, Connexa's UI can be rebuilt into a polished, branded SaaS experience, and the pipeline itself can scale to pull 200+ leads a month across new markets as Namhya grows global.**
+
 ---
 
 ## Project Structure
