@@ -46,23 +46,99 @@ function csvCell(value) {
 // GET /api/leads/check-duplicate  — requirePipeline (Make.com)
 router.get('/check-duplicate', requirePipeline, async (req, res) => {
   try {
-    const { email, company } = req.query;
+    const { email, company, fullName } = req.query;
     
     let exists = false;
     
     if (email && email.trim() !== '') {
       // Primary check: exact email match
       exists = await Lead.exists({ email: email.trim().toLowerCase() });
-    } else if (company && company.trim() !== '') {
-      // Fallback: fuzzy company name match (case-insensitive)
-      exists = await Lead.exists({ 
-        company: { $regex: new RegExp(company.trim(), 'i') }
-      });
+    }
+    
+    if (!exists && company && company.trim() !== '') {
+      // Fallback: fuzzy company name match
+      // Escape regex specials just in case, but keep it flexible
+      const safeCompany = company.trim().replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
+      const companyRegex = new RegExp(safeCompany, 'i');
+      
+      // If fullName is also provided, check both
+      if (fullName && fullName.trim() !== '') {
+        const safeName = fullName.trim().replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
+        exists = await Lead.exists({ 
+          company: { $regex: companyRegex },
+          fullName: { $regex: new RegExp(safeName, 'i') }
+        });
+      } else {
+        exists = await Lead.exists({ company: { $regex: companyRegex } });
+      }
     }
 
     return res.json({ exists: !!exists });
   } catch (err) {
     console.error('check-duplicate error:', err);
+    return res.status(500).json({ error: 'Internal server error' });
+  }
+});
+
+// POST /api/leads/cleanup-duplicates
+// Temporarily added to clean up the production database
+router.post('/cleanup-duplicates', requireAuth, async (req, res) => {
+  try {
+    const leads = await Lead.find().sort({ addedAt: 1 }); // Oldest first
+    
+    const keepIds = new Set();
+    const deleteIds = [];
+    
+    // Naive memory-based deduplication
+    // We will build a list of normalized strings to track what we've seen
+    const seenKeys = new Set();
+    
+    for (const lead of leads) {
+      const email = (lead.email || '').trim().toLowerCase();
+      // Normalize company: remove punctuation, lowercase, remove spaces
+      const company = (lead.company || '').trim().toLowerCase().replace(/[^a-z0-9]/g, '');
+      const name = (lead.fullName || '').trim().toLowerCase().replace(/[^a-z0-9]/g, '');
+      
+      let isDuplicate = false;
+      
+      // 1. Exact Email Match
+      if (email && seenKeys.has(`email:${email}`)) {
+        isDuplicate = true;
+      }
+      
+      // 2. Company + Name Match (fuzzy)
+      if (company && name && seenKeys.has(`compname:${company}:${name}`)) {
+        isDuplicate = true;
+      }
+      
+      // 3. Just Company Match (if they want strict 1-lead-per-company)
+      // We will assume that if company string is highly similar (after strip), it's a dup.
+      if (company && seenKeys.has(`comp:${company}`)) {
+        isDuplicate = true;
+      }
+      
+      if (isDuplicate) {
+        deleteIds.push(lead._id);
+      } else {
+        keepIds.add(lead._id.toString());
+        if (email) seenKeys.add(`email:${email}`);
+        if (company && name) seenKeys.add(`compname:${company}:${name}`);
+        if (company) seenKeys.add(`comp:${company}`);
+      }
+    }
+    
+    // Execute deletion
+    if (deleteIds.length > 0) {
+      await Lead.deleteMany({ _id: { $in: deleteIds } });
+    }
+    
+    return res.json({ 
+      success: true, 
+      scanned: leads.length, 
+      deleted: deleteIds.length 
+    });
+  } catch (err) {
+    console.error('cleanup error:', err);
     return res.status(500).json({ error: 'Internal server error' });
   }
 });
