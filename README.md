@@ -1,8 +1,8 @@
-# Namhya LeadFlow — Founder's Command Centre
+# Connexa — Where Namhya's Ayurvedic Wisdom Finds Its Next Home
 
 > **Automated B2B lead generation + outreach management dashboard for Namhya Foods' global expansion.**
 
-Namhya LeadFlow is an end-to-end system that automatically discovers potential distribution and partnership leads across 5 international markets every morning, enriches them with contact details and AI-written relevance notes, deduplicates them, and saves them into a clean dashboard — so the founder can start outreach with one click, not 3 hours of research.
+Namhya LeadFlow is an end-to-end system that automatically discovers potential distribution and partnership leads across 5 international markets every morning, enriches them with contact details and AI-written relevance notes, deduplicates them, and saves them into a clean dashboard, so the founder can start outreach with one click, not 3 hours of research.
 
 ---
 
@@ -19,7 +19,7 @@ Namhya LeadFlow is an end-to-end system that automatically discovers potential d
 | ![Analytics](./screenshot-analytics.png) | ![Pipeline](./screenshot-pipeline.png) |
 | *Analytics charts* | *Pipeline page* |
 | ![Pulse Running](./screenshot-pulse-running.png) | ![Make Scenario](./screenshot-make-scenario.png) |
-| *Pipeline Pulse bar — running state* | *Make.com scenario canvas* |
+| *Pipeline Pulse bar - running state* | *Make.com scenario canvas* |
 
 ---
 
@@ -28,7 +28,7 @@ Namhya LeadFlow is an end-to-end system that automatically discovers potential d
 1. [What It Does](#1-what-it-does)
 2. [How Everything Connects](#2-how-everything-connects)
 3. [The Make.com Automation Workflow](#3-the-makecom-automation-workflow)
-4. [The Dashboard — Feature by Feature](#4-the-dashboard--feature-by-feature)
+4. [The Dashboard - Feature by Feature](#4-the-dashboard--feature-by-feature)
 5. [Tech Stack](#5-tech-stack)
 6. [Environment Variables](#6-environment-variables)
 7. [Deploying the App](#7-deploying-the-app)
@@ -38,15 +38,15 @@ Namhya LeadFlow is an end-to-end system that automatically discovers potential d
 
 ## 1. What It Does
 
-Every morning at 9:00 AM IST (3:30 UTC), an automated pipeline runs entirely in the cloud — no laptop needed, no manual work:
+Every morning at 9:00 AM IST (3:30 UTC), an automated pipeline runs entirely in the cloud - no laptop needed, no manual work:
 
 1. **Searches the web** for ayurveda/wellness importers and distributors in the US, UK, Canada, UAE, and Australia using **Tavily** (an AI-optimised search API)
 2. **Finds contact emails** for each company using **Hunter.io**'s domain search
 3. **Writes a personalised relevance note** for each lead using **Groq AI** (Mixtral 8x7B), explaining specifically why that company is a fit for Namhya Foods
-4. **Deduplicates** — checks if the lead already exists in the database before saving
+4. **Deduplicates** - checks if the lead already exists in the database before saving
 5. **Saves** each new lead to the database with a full profile
 
-The founder wakes up, opens the dashboard, and sees new qualified leads with emails and AI notes already written — ready to copy the email and reach out.
+The founder wakes up, opens the dashboard, and sees new qualified leads with emails and AI notes already written - ready to copy the email and reach out.
 
 ---
 
@@ -83,13 +83,13 @@ The founder wakes up, opens the dashboard, and sees new qualified leads with ema
                         └─────────────────────────┘
 ```
 
-**Key security detail:** Make.com sends a secret header (`x-pipeline-secret`) with every request to the backend. The backend checks this header before accepting any data — so no one else can inject fake leads.
+**Key security detail:** Make.com sends a secret header (`x-pipeline-secret`) with every request to the backend. The backend checks this header before accepting any data - so no one else can inject fake leads.
 
 ---
 
 ## 3. The Make.com Automation Workflow
 
-The entire pipeline runs inside **Make.com** — a no-code automation tool. Think of it as a visual flowchart where each box is a step, and data flows left to right.
+The entire pipeline runs inside **Make.com** - a no-code automation tool. Think of it as a visual flowchart where each box is a step, and data flows left to right.
 
 ![Make.com Scenario](./screenshot-make-scenario.png)
 
@@ -97,17 +97,17 @@ The entire pipeline runs inside **Make.com** — a no-code automation tool. Thin
 
 There are two ways the pipeline can start:
 
-**A — Automatic (every morning):**
+**A - Automatic (every morning):**
 A `Schedule` module runs at 3:30 UTC (9:00 AM IST), every day, automatically.
 
-**B — Manual (from the dashboard):**
+**B - Manual (from the dashboard):**
 When you click the **"Run Now"** button on the Pipeline page or the top bar, the frontend sends a POST request to a Make.com **webhook URL**. Make.com receives it and immediately starts the pipeline. Both paths merge into a single `Router` module, so the rest of the pipeline is identical either way.
 
 ---
 
 ### Step-by-Step Pipeline Walkthrough
 
-**Step 1 — Set search queries**
+**Step 1 - Set search queries**
 The pipeline hardcodes 5 search strings, one per target market:
 - `"ayurveda wellness tea distributor importer United States contact email"`
 - `"herbal health food broker importing agency United Kingdom wellness contact"`
@@ -115,36 +115,36 @@ The pipeline hardcodes 5 search strings, one per target market:
 - `"health food importing agency Dubai UAE wellness herbal contact"`
 - `"ayurveda supplement natural food distributor Australia contact email"`
 
-These are carefully written to find B2B distribution companies — not end consumers or retailers.
+These are carefully written to find B2B distribution companies - not end consumers or retailers.
 
 ---
 
-**Step 2 — Loop through each query (Iterator)**
-Make.com's `Iterator` module runs Steps 3–11 five times — once per search query. Each iteration processes one market.
+**Step 2 - Loop through each query (Iterator)**
+Make.com's `Iterator` module runs Steps 3–11 five times - once per search query. Each iteration processes one market.
 
 ---
 
-**Step 3 — Tavily Search**
+**Step 3 - Tavily Search**
 Each query is sent to the **Tavily API**, which performs an advanced web search and returns up to 10 company results. Each result has:
 - Company name
 - Website URL
 - A content snippet describing the company
 
-Tavily is used instead of Google because it returns clean, structured, AI-optimised results — ideal for this kind of business discovery.
+Tavily is used instead of Google because it returns clean, structured, AI-optimised results - ideal for this kind of business discovery.
 
 ---
 
-**Step 4 — Extract company details**
+**Step 4 - Extract company details**
 For each of the 10 results, Make.com extracts:
-- `companyName` — from the search result title
-- `companyWebsite` — the website URL
-- `companyDescription` — the content snippet
+- `companyName` - from the search result title
+- `companyWebsite` - the website URL
+- `companyDescription` - the content snippet
 
 Another `Iterator` loops through all 10 results, processing each one individually.
 
 ---
 
-**Step 5 — Hunter.io Domain Search**
+**Step 5 - Hunter.io Domain Search**
 The company's domain is extracted from the website URL and sent to **Hunter.io**. Hunter searches for all known email addresses at that domain and returns:
 - Email address
 - First name, last name, job title
@@ -154,18 +154,18 @@ Only emails with a confidence score above 70 are used. This filters out guessed 
 
 ---
 
-**Step 6 — Duplicate Check**
+**Step 6 - Duplicate Check**
 Before doing any AI work, Make.com calls your backend:
 ```
 GET /api/leads/check-duplicate?email=someone@company.com
 ```
 The backend checks if that email already exists in the database and responds with `{ "exists": true }` or `{ "exists": false }`.
 
-A **Filter** module then stops processing if the lead already exists — no duplicates are ever saved.
+A **Filter** module then stops processing if the lead already exists - no duplicates are ever saved.
 
 ---
 
-**Step 7 — Groq AI writes the relevance note**
+**Step 7 - Groq AI writes the relevance note**
 For every new lead that passes the duplicate filter, the company's name and description are sent to **Groq** (running Mixtral 8x7B). The AI is given this prompt:
 
 > *"Namhya Foods is an Ayurveda-led D2C wellness tea brand from India, featured on Shark Tank India, now expanding to US, UK, Canada, UAE, and Australia. In exactly 1-2 sentences, explain why [company name] could be a strong distribution or partnership candidate..."*
@@ -174,7 +174,7 @@ The result is a specific, non-generic 1–2 sentence note explaining exactly why
 
 ---
 
-**Step 8 — Determine outreach channel**
+**Step 8 - Determine outreach channel**
 A simple logic rule decides how to reach out:
 - If Hunter found an email → **Email**
 - If no email but LinkedIn URL detected → **LinkedIn DM**
@@ -182,7 +182,7 @@ A simple logic rule decides how to reach out:
 
 ---
 
-**Step 9 — Save the lead**
+**Step 9 - Save the lead**
 The complete lead object is POSTed to your backend:
 ```
 POST /api/leads
@@ -192,7 +192,7 @@ The backend validates and saves it to MongoDB.
 
 ---
 
-**Step 10 — Mark the run as complete**
+**Step 10 - Mark the run as complete**
 After all leads from all 5 markets are processed, one final call is made:
 ```
 POST /api/pipeline-runs/complete
@@ -222,13 +222,13 @@ Render's free backend goes to sleep after 15 minutes of inactivity. A second Mak
 
 ---
 
-## 4. The Dashboard — Feature by Feature
+## 4. The Dashboard - Feature by Feature
 
 ![Dashboard](./screenshot-dashboard.png)
 
 ### Login Page
 
-A clean, centred login form. One admin account — protected by JWT (JSON Web Token) with a 7-day expiry. After login, the token is stored in the browser and sent automatically with every request to the backend.
+A clean, centred login form. One admin account - protected by JWT (JSON Web Token) with a 7-day expiry. After login, the token is stored in the browser and sent automatically with every request to the backend.
 
 ---
 
@@ -246,19 +246,19 @@ It also shows when the last run was and how many leads were added. The **Run Now
 
 ---
 
-### Dashboard — Leads Table
+### Dashboard - Leads Table
 
 ![Dashboard with Leads](./screenshot-dashboard.png)
 
-**Stats bar** — 4 cards at the top showing:
+**Stats bar** - 4 cards at the top showing:
 - Total leads in the database
 - Leads added this week
 - Number of markets covered (out of 5)
 - Leads that have been contacted (status is not "New")
 
-**Filter bar** — Search by name, company, or email. Filter by Country, Status, or Outreach Channel. All filters work together and update the table instantly.
+**Filter bar** - Search by name, company, or email. Filter by Country, Status, or Outreach Channel. All filters work together and update the table instantly.
 
-**Leads table** — Each row shows:
+**Leads table** - Each row shows:
 - Contact name + job title
 - Company
 - Country with flag emoji
@@ -267,9 +267,9 @@ It also shows when the last run was and how many leads were added. The **Run Now
 - Status badge (colour-coded)
 - Date added
 
-**Row actions (···)** — Click the three dots on any row to quickly change the lead's status without opening the full modal. Great for quickly marking leads as "Contacted" after sending an email.
+**Row actions (···)** - Click the three dots on any row to quickly change the lead's status without opening the full modal. Great for quickly marking leads as "Contacted" after sending an email.
 
-**Export CSV** — Downloads the current filtered view as a CSV file, compatible with Excel and Google Sheets. Includes all columns: name, company, email, country, channel, status, notes, and date added.
+**Export CSV** - Downloads the current filtered view as a CSV file, compatible with Excel and Google Sheets. Includes all columns: name, company, email, country, channel, status, notes, and date added.
 
 ---
 
@@ -280,9 +280,9 @@ It also shows when the last run was and how many leads were added. The **Run Now
 Click any row to open the lead's full profile in a drawer that slides in from the right:
 
 - Full contact information (email, LinkedIn, website)
-- **"Why This Lead"** — the Groq-generated relevance note explaining why this company is a fit for Namhya
-- **Notes field** — type outreach notes, follow-up context, conversation history. Saves automatically on blur.
-- **Status dropdown** — change the lead's status directly from the drawer. Auto-saves and shows a toast confirmation.
+- **"Why This Lead"** - the Groq-generated relevance note explaining why this company is a fit for Namhya
+- **Notes field** - type outreach notes, follow-up context, conversation history. Saves automatically on blur.
+- **Status dropdown** - change the lead's status directly from the drawer. Auto-saves and shows a toast confirmation.
 - Source and metadata (when added, which country, where the lead came from)
 
 ---
@@ -293,12 +293,12 @@ Click any row to open the lead's full profile in a drawer that slides in from th
 
 Four charts giving a market-wide view of the pipeline:
 
-1. **Leads by Country** (horizontal bar chart) — see which markets have the most leads
-2. **Outreach Channel Breakdown** (donut chart) — email vs LinkedIn vs website contact form
-3. **Status Funnel** (bar chart) — how many leads are New, Contacted, Responded, Converted
-4. **Leads Added Over Time** (line chart) — daily additions over the last 14 days
+1. **Leads by Country** (horizontal bar chart) - see which markets have the most leads
+2. **Outreach Channel Breakdown** (donut chart) - email vs LinkedIn vs website contact form
+3. **Status Funnel** (bar chart) - how many leads are New, Contacted, Responded, Converted
+4. **Leads Added Over Time** (line chart) - daily additions over the last 14 days
 
-All data is live from the backend — refreshes on every page load.
+All data is live from the backend - refreshes on every page load.
 
 ---
 
@@ -307,13 +307,13 @@ All data is live from the backend — refreshes on every page load.
 ![Pipeline](./screenshot-pipeline.png)
 
 - Visual diagram showing the 5-step pipeline flow: Tavily → Hunter → Groq → Dedupe → Dashboard
-- **Run Now** button — triggers the pipeline manually
-- **Recent Runs** table — shows the last 20 pipeline runs with date, leads added, status, who triggered it, and duration
+- **Run Now** button - triggers the pipeline manually
+- **Recent Runs** table - shows the last 20 pipeline runs with date, leads added, status, who triggered it, and duration
 
 Status colours in the run table:
-- 🟡 **Running** — saffron, pipeline currently in progress
-- 🟢 **Completed** — jade, finished successfully
-- 🔴 **Failed** — red, something went wrong
+- 🟡 **Running** - saffron, pipeline currently in progress
+- 🟢 **Completed** - jade, finished successfully
+- 🔴 **Failed** - red, something went wrong
 
 ---
 
@@ -347,9 +347,9 @@ Status colours in the run table:
 | Variable | What it is |
 |---|---|
 | `MONGO_URI` | Your MongoDB Atlas connection string |
-| `JWT_SECRET` | Any long random string — used to sign login tokens |
-| `PIPELINE_SECRET` | Any long random string — Make.com sends this in every request header so your backend only accepts calls from Make |
-| `FRONTEND_URL` | Your Vercel frontend URL — used for CORS |
+| `JWT_SECRET` | Any long random string - used to sign login tokens |
+| `PIPELINE_SECRET` | Any long random string - Make.com sends this in every request header so your backend only accepts calls from Make |
+| `FRONTEND_URL` | Your Vercel frontend URL - used for CORS |
 | `PORT` | Set automatically by Render, no need to set manually |
 
 ---
@@ -370,14 +370,14 @@ Status colours in the run table:
 2. Connect your GitHub repo, set Root Directory to `Frontend`
 3. Framework Preset: **Vite** (Vercel detects this automatically)
 4. Add `VITE_API_URL` and `VITE_MAKE_WEBHOOK_URL` in the Vercel environment variables section
-5. Deploy — the `vercel.json` file in the Frontend folder ensures React Router works correctly on refresh
+5. Deploy - the `vercel.json` file in the Frontend folder ensures React Router works correctly on refresh
 
 ### Make.com
 1. Create a new scenario: **"Namhya Lead Pipeline"**
 2. Build the 14 modules as described in Section 3
 3. Replace all placeholder values (`YOUR_TAVILY_KEY`, `YOUR_HUNTER_KEY`, `YOUR_GROQ_KEY`, `YOUR_SECRET`, `your-backend.onrender.com`) with real values
 4. Turn on the scenario scheduler
-5. Create a second scenario: **"Warmup Ping"** — schedule every 10 minutes, GET to `/api/health`
+5. Create a second scenario: **"Warmup Ping"** - schedule every 10 minutes, GET to `/api/health`
 
 ---
 
@@ -386,24 +386,26 @@ Status colours in the run table:
 The architecture is intentionally modular. Everything below is a clean addition that doesn't break what exists.
 
 ### Easy Wins (no backend changes needed)
-- **Add more target countries** — Update the 5 search queries in Make.com Module 2. The `Lead.js` model's country enum just needs a new value added.
-- **Change search queries** — Edit the query strings in Make.com Module 2 to target different industries or company types.
-- **Adjust pipeline schedule** — Change the time in Make.com's Schedule module. No code changes.
-- **Add more analytics charts** — The `/api/analytics/summary` endpoint already returns rich data. Just add more `<Recharts>` components to `AnalyticsPage.jsx`.
+- **Add more target countries** - Update the 5 search queries in Make.com Module 2. The `Lead.js` model's country enum just needs a new value added.
+- **Change search queries** - Edit the query strings in Make.com Module 2 to target different industries or company types.
+- **Adjust pipeline schedule** - Change the time in Make.com's Schedule module. No code changes.
+- **Add more analytics charts** - The `/api/analytics/summary` endpoint already returns rich data. Just add more `<Recharts>` components to `AnalyticsPage.jsx`.
 
 ### Medium Additions (small backend + frontend work)
-- **Email outreach tracker** — Add a `lastContactedAt` field to the Lead model. Build a simple "Mark as Contacted + log timestamp" flow in the modal.
-- **LinkedIn URL discovery** — Add a LinkedIn search step in Make.com using the company name. Hunter.io sometimes returns LinkedIn URLs already.
-- **Bulk status update** — The table already has checkboxes. Wire them up to a "Mark selected as Contacted" button using `PUT /api/leads/:id` in a loop.
-- **Notes history / timeline** — Instead of overwriting the notes field, append entries with timestamps. Requires a `notes` array in the Lead schema.
-- **More pipeline triggers** — Add a Make.com webhook for "Run for one specific country" — pass a country param in the body, filter the iterator to only run that query.
+- **Email outreach tracker** - Add a `lastContactedAt` field to the Lead model. Build a simple "Mark as Contacted + log timestamp" flow in the modal.
+- **LinkedIn URL discovery** - Add a LinkedIn search step in Make.com using the company name. Hunter.io sometimes returns LinkedIn URLs already.
+- **Bulk status update** - The table already has checkboxes. Wire them up to a "Mark selected as Contacted" button using `PUT /api/leads/:id` in a loop.
+- **Notes history / timeline** - Instead of overwriting the notes field, append entries with timestamps. Requires a `notes` array in the Lead schema.
+- **More pipeline triggers** - Add a Make.com webhook for "Run for one specific country" - pass a country param in the body, filter the iterator to only run that query.
 
 ### Bigger Additions
-- **Email sending** — Integrate SendGrid or Resend into the backend. Add a "Send Email" button in the drawer that uses the lead's email and a pre-written template.
-- **User roles** — The `User` model already has a `role` field. Add an `intern` role with read-only access. The `requireAuth` middleware can check `req.user.role`.
-- **Slack/WhatsApp notifications** — Add a Make.com module at the end of the pipeline that sends a Slack message: "Pipeline complete: +N leads added across US, UK, CA, UAE, AU."
-- **Scoring system** — Add a `score` field to leads (0–100). Make.com can calculate a score based on email confidence, company description relevance, etc. Sort leads by score in the dashboard.
-- **Multiple pipeline scenarios** — Create separate Make.com scenarios for different verticals: health food retailers, Ayurveda practitioners, e-commerce platforms. Each saves leads with a `source` tag so they're filterable.
+- **Email sending** - Integrate SendGrid or Resend into the backend. Add a "Send Email" button in the drawer that uses the lead's email and a pre-written template.
+- **User roles** - The `User` model already has a `role` field. Add an `intern` role with read-only access. The `requireAuth` middleware can check `req.user.role`.
+- **Slack/WhatsApp notifications** - Add a Make.com module at the end of the pipeline that sends a Slack message: "Pipeline complete: +N leads added across US, UK, CA, UAE, AU."
+- **Scoring system** - Add a `score` field to leads (0–100). Make.com can calculate a score based on email confidence, company description relevance, etc. Sort leads by score in the dashboard.
+- **Multiple pipeline scenarios** - Create separate Make.com scenarios for different verticals: health food retailers, Ayurveda practitioners, e-commerce platforms. Each saves leads with a `source` tag so they're filterable.
+
+### **This is a functional MVP, not the final form. With more time, Connexa's UI can be rebuilt into a polished, branded SaaS experience, and the pipeline itself can scale to pull 200+ leads a month across new markets as Namhya grows global.**
 
 ---
 
@@ -413,39 +415,39 @@ The architecture is intentionally modular. Everything below is a clean addition 
 Connexa/
 ├── Backend/
 │   ├── models/
-│   │   ├── Lead.js           — Lead data structure
-│   │   ├── PipelineRun.js    — Pipeline run history
-│   │   └── User.js           — Admin user
+│   │   ├── Lead.js           - Lead data structure
+│   │   ├── PipelineRun.js    - Pipeline run history
+│   │   └── User.js           - Admin user
 │   ├── routes/
-│   │   ├── auth.js           — Login + /me
-│   │   ├── leads.js          — CRUD + export + duplicate check
-│   │   ├── analytics.js      — Summary stats for charts
-│   │   └── pipeline.js       — Run history + start/complete
+│   │   ├── auth.js           - Login + /me
+│   │   ├── leads.js          - CRUD + export + duplicate check
+│   │   ├── analytics.js      - Summary stats for charts
+│   │   └── pipeline.js       - Run history + start/complete
 │   ├── middleware/
-│   │   ├── requireAuth.js    — JWT validation for frontend calls
-│   │   └── requirePipeline.js — Pipeline secret for Make.com calls
+│   │   ├── requireAuth.js    - JWT validation for frontend calls
+│   │   └── requirePipeline.js - Pipeline secret for Make.com calls
 │   ├── scripts/
-│   │   └── seed.js           — Creates the admin user in MongoDB
-│   └── server.js             — Express app entry point
+│   │   └── seed.js           - Creates the admin user in MongoDB
+│   └── server.js             - Express app entry point
 │
 ├── Frontend/
 │   ├── src/
-│   │   ├── api/axios.js          — Axios instance with auth interceptor
+│   │   ├── api/axios.js          - Axios instance with auth interceptor
 │   │   ├── context/
-│   │   │   ├── AuthContext.jsx   — Login state + token management
-│   │   │   └── ToastContext.jsx  — Global toast notifications
+│   │   │   ├── AuthContext.jsx   - Login state + token management
+│   │   │   └── ToastContext.jsx  - Global toast notifications
 │   │   ├── components/
-│   │   │   ├── common/           — StatusBadge, ToastContainer, Pagination
-│   │   │   ├── dashboard/        — StatsBar, FilterBar, LeadsTable, LeadModal
-│   │   │   └── layout/           — AppShell, Sidebar, PipelinePulse
+│   │   │   ├── common/           - StatusBadge, ToastContainer, Pagination
+│   │   │   ├── dashboard/        - StatsBar, FilterBar, LeadsTable, LeadModal
+│   │   │   └── layout/           - AppShell, Sidebar, PipelinePulse
 │   │   └── pages/
 │   │       ├── LoginPage.jsx
 │   │       ├── DashboardPage.jsx
 │   │       ├── AnalyticsPage.jsx
 │   │       └── PipelinePage.jsx
-│   └── vercel.json               — Rewrites for React Router on Vercel
+│   └── vercel.json               - Rewrites for React Router on Vercel
 │
-└── vercel.json                   — Same, for repo-root Vercel deployments
+└── vercel.json                   - Same, for repo-root Vercel deployments
 ```
 
 ---
