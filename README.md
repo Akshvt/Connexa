@@ -12,13 +12,13 @@ Namhya LeadFlow is an end-to-end system that automatically discovers potential d
 
 | | |
 |---|---|
-| ![Login](./screenshot-login.png) | ![Dashboard](./screenshot-dashboard.png) |
+| ![Login](./screenshots/screenshot-login.png) | ![Dashboard](./screenshots/screenshot-dashboard.png) |
 | *Login page* | *Leads dashboard* |
-| ![Filter](./screenshot-filter.png) | ![Modal](./screenshot-modal.png) |
+| ![Filter](./screenshots/screenshot-filter.png) | ![Modal](./screenshots/screenshot-modal.png) |
 | *Filter bar open* | *Lead detail drawer* |
-| ![Analytics](./screenshot-analytics.png) | ![Pipeline](./screenshot-pipeline.png) |
+| ![Analytics](./screenshots/screenshot-analytics.png) | ![Pipeline](./screenshots/screenshot-pipeline.png) |
 | *Analytics charts* | *Pipeline page* |
-| ![Pulse Running](./screenshot-pulse-running.png) | ![Make Scenario](./screenshot-make-scenario.png) |
+| ![Pulse Running](./screenshots/screenshot-pulse-running.png) | ![Make Scenario](./screenshots/screenshot-make-scenario.png) |
 | *Pipeline Pulse bar - running state* | *Make.com scenario canvas* |
 
 ---
@@ -91,7 +91,7 @@ The founder wakes up, opens the dashboard, and sees new qualified leads with ema
 
 The entire pipeline runs inside **Make.com** - a no-code automation tool. Think of it as a visual flowchart where each box is a step, and data flows left to right.
 
-![Make.com Scenario](./screenshot-make-scenario.png)
+![Make.com Scenario](./screenshots/screenshot-make-scenario.png)
 
 ### Triggers (how the pipeline starts)
 
@@ -224,7 +224,7 @@ Render's free backend goes to sleep after 15 minutes of inactivity. A second Mak
 
 ## 4. The Dashboard - Feature by Feature
 
-![Dashboard](./screenshot-dashboard.png)
+![Dashboard](./screenshots/screenshot-dashboard.png)
 
 ### Login Page
 
@@ -234,7 +234,7 @@ A clean, centred login form. One admin account - protected by JWT (JSON Web Toke
 
 ### Pipeline Pulse Bar
 
-![Pipeline Running](./screenshot-pulse-running.png)
+![Pipeline Running](./screenshots/screenshot-pulse-running.png)
 
 The thin bar fixed at the very top of every page. One glance tells you everything about the pipeline:
 
@@ -248,7 +248,7 @@ It also shows when the last run was and how many leads were added. The **Run Now
 
 ### Dashboard - Leads Table
 
-![Dashboard with Leads](./screenshot-dashboard.png)
+![Dashboard with Leads](./screenshots/screenshot-dashboard.png)
 
 **Stats bar** - 4 cards at the top showing:
 - Total leads in the database
@@ -275,7 +275,7 @@ It also shows when the last run was and how many leads were added. The **Run Now
 
 ### Lead Detail Drawer
 
-![Lead Modal](./screenshot-modal.png)
+![Lead Modal](./screenshots/screenshot-modal.png)
 
 Click any row to open the lead's full profile in a drawer that slides in from the right:
 
@@ -289,7 +289,7 @@ Click any row to open the lead's full profile in a drawer that slides in from th
 
 ### Analytics Page
 
-![Analytics](./screenshot-analytics.png)
+![Analytics](./screenshots/screenshot-analytics.png)
 
 Four charts giving a market-wide view of the pipeline:
 
@@ -304,7 +304,7 @@ All data is live from the backend - refreshes on every page load.
 
 ### Pipeline Page
 
-![Pipeline](./screenshot-pipeline.png)
+![Pipeline](./screenshots/screenshot-pipeline.png)
 
 - Visual diagram showing the 5-step pipeline flow: Tavily → Hunter → Groq → Dedupe → Dashboard
 - **Run Now** button - triggers the pipeline manually
