@@ -2,7 +2,7 @@
 
 > **Automated B2B lead generation + outreach management dashboard for Namhya Foods' global expansion.**
 
-Namhya LeadFlow is an end-to-end system that automatically discovers potential distribution and partnership leads across 5 international markets every morning, enriches them with contact details and AI-written relevance notes, deduplicates them, and saves them into a clean dashboard — so the founder can start outreach with one click, not 3 hours of research.
+Namhya LeadFlow is an end-to-end system that automatically discovers potential distribution and partnership leads across 5 international markets every morning, enriches them with contact details and AI-written relevance notes, deduplicates them, and saves them into a clean dashboard, so the founder can start outreach with one click, not 3 hours of research.
 
 ---
 
