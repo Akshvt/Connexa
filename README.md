@@ -42,7 +42,7 @@ Every morning at 9:00 AM IST (3:30 UTC), an automated pipeline runs entirely in 
 
 1. **Searches the web** for ayurveda/wellness importers and distributors in the US, UK, Canada, UAE, and Australia using **Tavily** (an AI-optimised search API)
 2. **Finds contact emails** for each company using **Hunter.io**'s domain search
-3. **Writes a personalised relevance note** for each lead using **Groq AI** (Mixtral 8x7B), explaining specifically why that company is a fit for Namhya Foods
+3. **Writes a personalised relevance note** for each lead using **Groq AI** (llama-3.1-8b-instant), explaining specifically why that company is a fit for Namhya Foods
 4. **Deduplicates** - checks if the lead already exists in the database before saving
 5. **Saves** each new lead to the database with a full profile
 
@@ -166,7 +166,7 @@ A **Filter** module then stops processing if the lead already exists - no duplic
 ---
 
 **Step 7 - Groq AI writes the relevance note**
-For every new lead that passes the duplicate filter, the company's name and description are sent to **Groq** (running Mixtral 8x7B). The AI is given this prompt:
+For every new lead that passes the duplicate filter, the company's name and description are sent to **Groq** (running llama-3.1-8b-instant). The AI is given this prompt:
 
 > *"Namhya Foods is an Ayurveda-led D2C wellness tea brand from India, featured on Shark Tank India, now expanding to US, UK, Canada, UAE, and Australia. In exactly 1-2 sentences, explain why [company name] could be a strong distribution or partnership candidate..."*
 
@@ -324,7 +324,7 @@ Status colours in the run table:
 | Automation | Make.com | Cloud (Make servers) |
 | Lead Discovery | Tavily API | Called by Make.com |
 | Email Finding | Hunter.io API | Called by Make.com |
-| AI Blurb | Groq (Mixtral 8x7B) | Called by Make.com |
+| AI Blurb | Groq (llama-3.1-8b-instant) | Called by Make.com |
 | Database | MongoDB Atlas M0 | Cloud (MongoDB servers) |
 | Backend | Node.js + Express | Render.com |
 | Frontend | React + Vite | Vercel |
