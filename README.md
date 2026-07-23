@@ -1,4 +1,4 @@
-# Namhya LeadFlow — Founder's Command Centre
+# Connexa — Where Namhya's Ayurvedic Wisdom Finds Its Next Home
 
 > **Automated B2B lead generation + outreach management dashboard for Namhya Foods' global expansion.**
 
@@ -404,6 +404,8 @@ The architecture is intentionally modular. Everything below is a clean addition 
 - **Slack/WhatsApp notifications** — Add a Make.com module at the end of the pipeline that sends a Slack message: "Pipeline complete: +N leads added across US, UK, CA, UAE, AU."
 - **Scoring system** — Add a `score` field to leads (0–100). Make.com can calculate a score based on email confidence, company description relevance, etc. Sort leads by score in the dashboard.
 - **Multiple pipeline scenarios** — Create separate Make.com scenarios for different verticals: health food retailers, Ayurveda practitioners, e-commerce platforms. Each saves leads with a `source` tag so they're filterable.
+
+### **This is a functional MVP, not the final form. With more time, Connexa's UI can be rebuilt into a polished, branded SaaS experience, and the pipeline itself can scale to pull 200+ leads a month across new markets as Namhya grows global.**
 
 ---
 
