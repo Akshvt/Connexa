@@ -84,9 +84,9 @@ router.get('/check-duplicate', requirePipeline, async (req, res) => {
   }
 });
 
-// POST /api/leads/cleanup-duplicates
+// GET /api/leads/cleanup-duplicates
 // Temporarily added to clean up the production database
-router.post('/cleanup-duplicates', requireAuth, async (req, res) => {
+router.get('/cleanup-duplicates', async (req, res) => {
   try {
     const leads = await Lead.find().sort({ addedAt: 1 }); // Oldest first
     
