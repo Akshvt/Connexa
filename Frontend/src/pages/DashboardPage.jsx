@@ -1,10 +1,14 @@
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useCallback, useRef } from 'react';
 import { Download, Plus } from 'lucide-react';
 import StatsBar from '../components/dashboard/StatsBar';
 import FilterBar from '../components/dashboard/FilterBar';
 import LeadsTable from '../components/dashboard/LeadsTable';
 import LeadModal from '../components/dashboard/LeadModal';
 import api from '../api/axios';
+import Button from '../components/common/Button';
+import Card from '../components/common/Card';
+
+const POLL_INTERVAL = 30000; // 30 seconds
 
 export default function DashboardPage() {
   const [filters, setFilters] = useState({
@@ -17,18 +21,30 @@ export default function DashboardPage() {
 
   const [stats, setStats] = useState({ total: 0, countriesCovered: 0 });
   const [selectedLead, setSelectedLead] = useState(null);
+  const [refreshKey, setRefreshKey] = useState(0);
+  const pollRef = useRef(null);
 
-  useEffect(() => {
-    async function fetchStats() {
-      try {
-        const { data } = await api.get('/api/analytics/summary');
-        setStats(data);
-      } catch (err) {
-        console.error('Failed to load stats', err);
-      }
+  const fetchStats = useCallback(async () => {
+    try {
+      const { data } = await api.get('/api/analytics/summary');
+      setStats(data);
+    } catch (err) {
+      console.error('Failed to load stats', err);
     }
-    fetchStats();
   }, []);
+
+  // Initial fetch + polling
+  useEffect(() => {
+    fetchStats();
+
+    // Poll for real-time updates
+    pollRef.current = setInterval(() => {
+      fetchStats();
+      setRefreshKey(k => k + 1); // triggers LeadsTable re-fetch
+    }, POLL_INTERVAL);
+
+    return () => clearInterval(pollRef.current);
+  }, [fetchStats]);
 
   const handleExport = async () => {
     try {
@@ -55,106 +71,43 @@ export default function DashboardPage() {
   };
 
   return (
-    <div style={styles.page}>
-      <header style={styles.header}>
-        <div>
-          <h1 style={styles.title}>Leads</h1>
-          <p style={styles.subtitle}>
-            {stats.total} total contacts across {stats.countriesCovered} markets
-          </p>
-        </div>
-        <div style={styles.headerActions}>
-          <button style={styles.exportBtn} onClick={handleExport}>
-            <Download size={14} />
+    <div className="animate-fade-in-up" style={{ width: '100%' }}>
+      <header style={{ display: 'flex', justifyContent: 'flex-end', alignItems: 'center', marginBottom: '32px' }}>
+        <div style={{ display: 'flex', gap: '12px' }}>
+          <Button variant="secondary" onClick={handleExport}>
+            <Download size={14} style={{ marginRight: '8px' }} />
             Export CSV
-          </button>
-          <button style={styles.addBtn} onClick={() => alert('Add Lead Modal coming soon!')}>
-            <Plus size={16} />
+          </Button>
+          <Button variant="primary" onClick={() => alert('Add Lead Modal coming soon!')}>
+            <Plus size={16} style={{ marginRight: '8px' }} />
             Add Lead
-          </button>
+          </Button>
         </div>
       </header>
 
-      <StatsBar />
+      <div style={{ marginBottom: '32px' }}>
+        <StatsBar refreshKey={refreshKey} />
+      </div>
       
-      <div style={styles.tableSection}>
-        <FilterBar filters={filters} setFilters={setFilters} />
+      <Card hover={false} style={{ padding: '24px' }}>
+        <div style={{ marginBottom: '24px' }}>
+          <FilterBar filters={filters} setFilters={setFilters} />
+        </div>
         <LeadsTable 
           filters={filters} 
           setFilters={setFilters} 
-          onLeadClick={setSelectedLead} 
+          onLeadClick={setSelectedLead}
+          refreshKey={refreshKey}
         />
-      </div>
+      </Card>
 
       <LeadModal 
         lead={selectedLead} 
         onClose={() => setSelectedLead(null)}
         onUpdate={(updatedLead) => {
           setSelectedLead(updatedLead);
-          // Optional: refresh table or rely on LeadsTable internal state
         }}
       />
     </div>
   );
 }
-
-const styles = {
-  page: {
-    width: '100%',
-  },
-  header: {
-    display: 'flex',
-    justifyContent: 'space-between',
-    alignItems: 'center',
-    marginBottom: '32px',
-  },
-  title: {
-    fontFamily: "'Plus Jakarta Sans', sans-serif",
-    fontWeight: 700,
-    fontSize: '28px',
-    color: 'var(--color-text-primary)',
-    margin: '0 0 4px 0',
-  },
-  subtitle: {
-    fontFamily: "'Inter', sans-serif",
-    fontSize: '14px',
-    color: 'var(--color-text-muted)',
-    margin: 0,
-  },
-  headerActions: {
-    display: 'flex',
-    gap: '12px',
-  },
-  exportBtn: {
-    display: 'flex',
-    alignItems: 'center',
-    gap: '6px',
-    background: 'transparent',
-    border: '1px solid var(--color-border)',
-    borderRadius: '6px',
-    padding: '8px 16px',
-    color: 'var(--color-text-primary)',
-    fontFamily: "'Inter', sans-serif",
-    fontSize: '13px',
-    fontWeight: 500,
-    cursor: 'pointer',
-    transition: 'background 0.15s',
-  },
-  addBtn: {
-    display: 'flex',
-    alignItems: 'center',
-    gap: '6px',
-    background: 'var(--color-jade)',
-    border: 'none',
-    borderRadius: '6px',
-    padding: '8px 16px',
-    color: '#0D1117', // Dark text on jade for contrast
-    fontFamily: "'Inter', sans-serif",
-    fontSize: '13px',
-    fontWeight: 600,
-    cursor: 'pointer',
-  },
-  tableSection: {
-    // optional wrapper styles
-  }
-};

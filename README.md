@@ -12,14 +12,16 @@ Namhya LeadFlow is an end-to-end system that automatically discovers potential d
 
 | | |
 |---|---|
-| ![Login](./screenshots/screenshot-login.png) | ![Dashboard](./screenshots/screenshot-dashboard.png) |
-| *Login page* | *Leads dashboard* |
-| ![Filter](./screenshots/screenshot-filter.png) | ![Modal](./screenshots/screenshot-modal.png) |
-| *Filter bar open* | *Lead detail drawer* |
-| ![Analytics](./screenshots/screenshot-analytics.png) | ![Pipeline](./screenshots/screenshot-pipeline.png) |
-| *Analytics charts* | *Pipeline page* |
-| ![Pulse Running](./screenshots/screenshot-pulse-running.png) | ![Make Scenario](./screenshots/screenshot-make-scenario.png) |
-| *Pipeline Pulse bar - running state* | *Make.com scenario canvas* |
+| ![Landing Page](./screenshots/screenshot-landing.png) | ![Login](./screenshots/screenshot-login.png) |
+| *Landing page* | *Login page* |
+| ![Dashboard](./screenshots/screenshot-dashboard.png) | ![Filter](./screenshots/screenshot-filter.png) |
+| *Leads dashboard* | *Filter bar open* |
+| ![Modal](./screenshots/screenshot-modal.png) | ![Analytics](./screenshots/screenshot-analytics.png) |
+| *Lead detail drawer* | *Analytics charts* |
+| ![Pipeline](./screenshots/screenshot-pipeline.png) | ![Pulse Running](./screenshots/screenshot-pulse-running.png) |
+| *Pipeline page* | *Pipeline Pulse bar - running state* |
+| ![Make Scenario](./screenshots/screenshot-make-scenario.png) | |
+| *Make.com scenario canvas* | |
 
 ---
 

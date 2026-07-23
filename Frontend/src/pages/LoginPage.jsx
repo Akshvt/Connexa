@@ -1,7 +1,9 @@
 import { useState } from 'react';
-import { useNavigate } from 'react-router-dom';
+import { useNavigate, Link } from 'react-router-dom';
+import { ArrowRight } from 'lucide-react';
 import api from '../api/axios.js';
 import { useAuth } from '../context/AuthContext.jsx';
+import ShaderBackground from '../components/effects/ShaderBackground';
 
 export default function LoginPage() {
   const { login } = useAuth();
@@ -11,6 +13,8 @@ export default function LoginPage() {
   const [password, setPassword] = useState('');
   const [error, setError]       = useState('');
   const [loading, setLoading]   = useState(false);
+  const [emailFocused, setEmailFocused] = useState(false);
+  const [passFocused, setPassFocused]   = useState(false);
 
   async function handleSubmit(e) {
     e.preventDefault();
@@ -19,7 +23,7 @@ export default function LoginPage() {
     try {
       const { data } = await api.post('/api/auth/login', { email, password });
       login(data.token);
-      navigate('/');
+      navigate('/dashboard');
     } catch (err) {
       const msg = err.response?.data?.error || 'Login failed. Please try again.';
       setError(msg);
@@ -28,161 +32,185 @@ export default function LoginPage() {
     }
   }
 
+  const isEmailActive = emailFocused || email.length > 0;
+  const isPassActive  = passFocused || password.length > 0;
+
   return (
-    <div style={styles.page}>
-      {/* Heading above card */}
-      <div style={styles.heading}>
-        <span style={styles.brand}>Namhya LeadFlow</span>
-        <span style={styles.subtitle}>Founder's Command Centre</span>
+    <div style={{
+      backgroundColor: 'var(--color-bg)',
+      minHeight: '100vh',
+      position: 'relative',
+      overflow: 'hidden',
+      display: 'flex',
+      flexDirection: 'column',
+    }}>
+      {/* Full-screen Shader Background */}
+      <div style={{
+        position: 'fixed', inset: 0, zIndex: 0, pointerEvents: 'none',
+      }}>
+        <div style={{ position: 'absolute', inset: 0, width: '100%', height: '100%', opacity: 0.6 }}>
+          <ShaderBackground />
+        </div>
       </div>
 
-      {/* Login card */}
-      <form style={styles.card} onSubmit={handleSubmit} noValidate>
-        <div style={styles.fieldGroup}>
-          <label style={styles.label} htmlFor="email">Email</label>
-          <input
-            id="email"
-            type="email"
-            autoComplete="email"
-            required
-            value={email}
-            onChange={(e) => setEmail(e.target.value)}
-            style={styles.input}
-            onFocus={(e) => Object.assign(e.target.style, styles.inputFocus)}
-            onBlur={(e)  => Object.assign(e.target.style, styles.input)}
-            placeholder="you@namhyafoods.com"
-          />
+      {/* Minimal Navbar — just the logo */}
+      <nav style={{
+        position: 'fixed', top: 0, width: '100%', height: '72px', zIndex: 50,
+        background: 'var(--landing-glass-bg)', backdropFilter: 'blur(20px)',
+        borderBottom: '1px solid var(--landing-glass-border)',
+        display: 'flex', alignItems: 'center', padding: '0 32px',
+      }}>
+        <Link to="/" style={{ fontSize: '24px', fontWeight: 700, color: 'var(--color-primary)', letterSpacing: '-0.5px' }}>
+          Connexa
+        </Link>
+      </nav>
+
+      {/* Main Content */}
+      <main style={{
+        flexGrow: 1, display: 'flex', alignItems: 'center', justifyContent: 'center',
+        position: 'relative', zIndex: 10, padding: '96px 16px',
+      }}>
+        {/* Login Card */}
+        <div style={{
+          width: '100%', maxWidth: '448px',
+          background: 'var(--landing-glass-bg)',
+          backdropFilter: 'blur(20px)', WebkitBackdropFilter: 'blur(20px)',
+          border: '1px solid var(--landing-glass-border)',
+          borderRadius: '24px', padding: '32px',
+          boxShadow: '0 25px 50px -12px rgba(0,0,0,0.4)',
+          position: 'relative', overflow: 'hidden',
+        }}>
+          {/* Internal glow blob */}
+          <div style={{
+            position: 'absolute', top: '-96px', right: '-96px',
+            width: '192px', height: '192px',
+            background: 'var(--color-primary)', opacity: 0.1,
+            borderRadius: '50%', filter: 'blur(48px)', pointerEvents: 'none',
+          }} />
+
+          {/* Header */}
+          <div style={{ textAlign: 'center', marginBottom: '32px', position: 'relative', zIndex: 10 }}>
+            <h1 style={{ fontSize: '40px', fontWeight: 600, letterSpacing: '-0.01em', marginBottom: '8px' }}>
+              Welcome Back
+            </h1>
+            <p style={{ fontSize: '16px' }}>Access your dashboard</p>
+          </div>
+
+          {/* Form */}
+          <form onSubmit={handleSubmit} noValidate style={{ position: 'relative', zIndex: 10 }}>
+            {/* Email Input Group */}
+            <div style={{ position: 'relative', marginBottom: '24px' }}>
+              <input
+                type="email"
+                id="login-email"
+                value={email}
+                onChange={e => setEmail(e.target.value)}
+                onFocus={() => setEmailFocused(true)}
+                onBlur={() => setEmailFocused(false)}
+                autoComplete="email"
+                required
+                style={{
+                  width: '100%', padding: '24px 16px 8px',
+                  backgroundColor: 'rgba(0,0,0,0.2)',
+                  border: `1px solid ${emailFocused ? 'var(--color-primary)' : 'var(--landing-glass-border)'}`,
+                  borderRadius: '12px', color: 'var(--color-text-primary)',
+                  fontSize: '16px', outline: 'none',
+                  transition: 'border-color 0.3s ease, background-color 0.3s ease',
+                  ...(emailFocused ? { backgroundColor: 'rgba(107,127,79,0.05)' } : {}),
+                }}
+              />
+              <label htmlFor="login-email" style={{
+                position: 'absolute', left: '16px',
+                top: isEmailActive ? '8px' : '50%',
+                transform: isEmailActive ? 'translateY(0)' : 'translateY(-50%)',
+                fontSize: isEmailActive ? '12px' : '16px',
+                color: emailFocused ? 'var(--color-primary)' : 'var(--color-text-secondary)',
+                transition: 'all 0.2s ease-out', pointerEvents: 'none',
+              }}>Email Address</label>
+            </div>
+
+            {/* Password Input Group */}
+            <div style={{ position: 'relative', marginBottom: '24px' }}>
+              <input
+                type="password"
+                id="login-password"
+                value={password}
+                onChange={e => setPassword(e.target.value)}
+                onFocus={() => setPassFocused(true)}
+                onBlur={() => setPassFocused(false)}
+                autoComplete="current-password"
+                required
+                style={{
+                  width: '100%', padding: '24px 16px 8px',
+                  backgroundColor: 'rgba(0,0,0,0.2)',
+                  border: `1px solid ${passFocused ? 'var(--color-primary)' : 'var(--landing-glass-border)'}`,
+                  borderRadius: '12px', color: 'var(--color-text-primary)',
+                  fontSize: '16px', outline: 'none',
+                  transition: 'border-color 0.3s ease, background-color 0.3s ease',
+                  ...(passFocused ? { backgroundColor: 'rgba(107,127,79,0.05)' } : {}),
+                }}
+              />
+              <label htmlFor="login-password" style={{
+                position: 'absolute', left: '16px',
+                top: isPassActive ? '8px' : '50%',
+                transform: isPassActive ? 'translateY(0)' : 'translateY(-50%)',
+                fontSize: isPassActive ? '12px' : '16px',
+                color: passFocused ? 'var(--color-primary)' : 'var(--color-text-secondary)',
+                transition: 'all 0.2s ease-out', pointerEvents: 'none',
+              }}>Password</label>
+            </div>
+
+            {/* Remember me / Forgot password row */}
+            <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'flex-end', marginBottom: '32px' }}>
+              <a href="#" style={{
+                fontSize: '14px', fontWeight: 600, letterSpacing: '0.05em',
+                color: 'var(--color-primary)', transition: 'color 0.3s ease',
+              }}>Forgot password?</a>
+            </div>
+
+            {error && (
+              <p style={{ color: '#F87171', fontSize: '13px', marginBottom: '16px', textAlign: 'center' }}>{error}</p>
+            )}
+
+            {/* Submit Button — full width pill with arrow */}
+            <button
+              type="submit"
+              disabled={loading}
+              style={{
+                width: '100%',
+                backgroundColor: 'var(--color-primary)',
+                color: '#FFFFFF',
+                fontWeight: 600, fontSize: '14px', letterSpacing: '0.05em', textTransform: 'uppercase',
+                padding: '16px', borderRadius: '999px', border: 'none',
+                cursor: loading ? 'not-allowed' : 'pointer',
+                opacity: loading ? 0.6 : 1,
+                transition: 'all 0.3s ease',
+                boxShadow: '0 4px 14px rgba(184, 206, 151, 0.2)',
+                display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '8px',
+              }}
+              onMouseEnter={e => { if (!loading) { e.currentTarget.style.transform = 'translateY(-2px)'; e.currentTarget.style.boxShadow = '0 6px 20px rgba(184, 206, 151, 0.3)'; }}}
+              onMouseLeave={e => { e.currentTarget.style.transform = 'translateY(0)'; e.currentTarget.style.boxShadow = '0 4px 14px rgba(184, 206, 151, 0.2)'; }}
+            >
+              {loading ? 'Signing in…' : 'Login to Dashboard'}
+              {!loading && <ArrowRight size={18} />}
+            </button>
+          </form>
+
+          {/* Request Access — below separator */}
+          <div style={{
+            marginTop: '24px', paddingTop: '24px', textAlign: 'center',
+            borderTop: '1px solid var(--landing-glass-border)',
+            position: 'relative', zIndex: 10,
+          }}>
+            <p style={{ fontSize: '16px' }}>
+              New here?{' '}
+              <Link to="/" style={{ color: 'var(--color-primary)', fontWeight: 600, transition: 'color 0.3s ease' }}>
+                Request Access
+              </Link>
+            </p>
+          </div>
         </div>
-
-        <div style={styles.fieldGroup}>
-          <label style={styles.label} htmlFor="password">Password</label>
-          <input
-            id="password"
-            type="password"
-            autoComplete="current-password"
-            required
-            value={password}
-            onChange={(e) => setPassword(e.target.value)}
-            style={styles.input}
-            onFocus={(e) => Object.assign(e.target.style, styles.inputFocus)}
-            onBlur={(e)  => Object.assign(e.target.style, styles.input)}
-            placeholder="••••••••"
-          />
-        </div>
-
-        {error && <p style={styles.error}>{error}</p>}
-
-        <button
-          id="login-submit"
-          type="submit"
-          disabled={loading}
-          style={loading ? { ...styles.button, ...styles.buttonDisabled } : styles.button}
-        >
-          {loading ? 'Signing in…' : 'Sign In'}
-        </button>
-      </form>
+      </main>
     </div>
   );
 }
-
-const styles = {
-  page: {
-    minHeight: '100vh',
-    display: 'flex',
-    flexDirection: 'column',
-    alignItems: 'center',
-    justifyContent: 'center',
-    background: 'radial-gradient(ellipse at center, #161B27 0%, #0D1117 70%)',
-    gap: '28px',
-  },
-  heading: {
-    display: 'flex',
-    flexDirection: 'column',
-    alignItems: 'center',
-    gap: '6px',
-  },
-  brand: {
-    fontFamily: "'Plus Jakarta Sans', sans-serif",
-    fontWeight: 700,
-    fontSize: '28px',
-    color: 'var(--color-text-primary)',
-    letterSpacing: '-0.5px',
-  },
-  subtitle: {
-    fontFamily: "'Inter', sans-serif",
-    fontWeight: 400,
-    fontSize: '14px',
-    color: 'var(--color-text-muted)',
-  },
-  card: {
-    background: 'var(--color-surface)',
-    border: '1px solid var(--color-border)',
-    borderRadius: '8px',
-    padding: '40px',
-    width: '380px',
-    display: 'flex',
-    flexDirection: 'column',
-    gap: '20px',
-    boxShadow: 'var(--shadow-card)',
-  },
-  fieldGroup: {
-    display: 'flex',
-    flexDirection: 'column',
-    gap: '6px',
-  },
-  label: {
-    fontFamily: "'Inter', sans-serif",
-    fontSize: '13px',
-    fontWeight: 500,
-    color: 'var(--color-text-secondary)',
-  },
-  input: {
-    background: 'var(--color-surface-2)',
-    border: '1px solid var(--color-border)',
-    borderRadius: '4px',
-    padding: '10px 14px',
-    fontSize: '14px',
-    fontFamily: "'Inter', sans-serif",
-    color: 'var(--color-text-primary)',
-    outline: 'none',
-    transition: 'border-color 0.15s, box-shadow 0.15s',
-    width: '100%',
-  },
-  inputFocus: {
-    background: 'var(--color-surface-2)',
-    border: '1px solid var(--color-jade)',
-    borderRadius: '4px',
-    padding: '10px 14px',
-    fontSize: '14px',
-    fontFamily: "'Inter', sans-serif",
-    color: 'var(--color-text-primary)',
-    outline: 'none',
-    boxShadow: '0 0 0 3px var(--color-jade-dim)',
-    transition: 'border-color 0.15s, box-shadow 0.15s',
-    width: '100%',
-  },
-  button: {
-    width: '100%',
-    padding: '11px',
-    background: 'var(--color-jade)',
-    color: '#0D1117',
-    border: 'none',
-    borderRadius: '4px',
-    fontSize: '13px',
-    fontFamily: "'Inter', sans-serif",
-    fontWeight: 600,
-    cursor: 'pointer',
-    letterSpacing: '0.01em',
-    transition: 'opacity 0.15s',
-  },
-  buttonDisabled: {
-    opacity: 0.6,
-    cursor: 'not-allowed',
-  },
-  error: {
-    margin: 0,
-    fontSize: '13px',
-    fontFamily: "'Inter', sans-serif",
-    color: '#F87171',
-  },
-};

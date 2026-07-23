@@ -1,71 +1,142 @@
+import React, { useState } from 'react';
+import { NavLink, useNavigate, useLocation } from 'react-router-dom';
+import { useAuth } from '../../context/AuthContext.jsx';
+import { 
+  LayoutDashboard, 
+  Users, 
+  Zap, 
+  BarChart3, 
+  Settings, 
+  HelpCircle, 
+  LogOut,
+  Search,
+  Sun,
+  Moon
+} from 'lucide-react';
 import PipelinePulse from './PipelinePulse.jsx';
-import Sidebar from './Sidebar.jsx';
+
+const NAV_ITEMS = [
+  { label: 'Dashboard',  to: '/dashboard', icon: <LayoutDashboard size={20} /> },
+  { label: 'Automation', to: '/pipeline',  icon: <Zap size={20} /> },
+  { label: 'Analytics',  to: '/analytics', icon: <BarChart3 size={20} /> },
+];
 
 export default function AppShell({ children }) {
-  return (
-    <div style={styles.root}>
-      {/* ── Top bar ── */}
-      <div style={styles.topBar}>
-        <PipelinePulse />
-      </div>
+  const { logout, token } = useAuth();
+  const navigate = useNavigate();
+  const location = useLocation();
+  
+  const [theme, setTheme] = useState(document.documentElement.getAttribute('data-theme') || 'dark');
 
-      {/* ── Below top bar ── */}
-      <div style={styles.body}>
-        {/* ── Left sidebar ── */}
-        <div style={styles.sidebar}>
-          <Sidebar />
+  const toggleTheme = () => {
+    const newTheme = theme === 'dark' ? 'light' : 'dark';
+    setTheme(newTheme);
+    document.documentElement.setAttribute('data-theme', newTheme);
+  };
+
+  function handleLogout() {
+    logout();
+    navigate('/login');
+  }
+
+  // Determine title based on route
+  let pageTitle = 'Connexa';
+  if (location.pathname.includes('/dashboard')) pageTitle = 'Dashboard';
+  if (location.pathname.includes('/pipeline')) pageTitle = 'Pipeline Automation';
+  if (location.pathname.includes('/analytics')) pageTitle = 'Analytics';
+
+  return (
+    <div style={{ display: 'flex', minHeight: '100vh', backgroundColor: 'var(--color-bg)', color: 'var(--color-text-primary)' }}>
+      
+      {/* ══════════ SIDEBAR ══════════ */}
+      <nav style={{
+        display: 'flex', flexDirection: 'column', width: '256px', position: 'fixed', left: 0, top: 0, bottom: 0,
+        backgroundColor: 'var(--color-sidebar-bg)', 
+        borderRight: '1px solid var(--color-glass-border)',
+        padding: '32px 16px', zIndex: 40,
+        boxShadow: 'var(--shadow-card)',
+      }}>
+        {/* Brand */}
+        <div style={{ marginBottom: '32px', paddingLeft: '8px' }}>
+          <div style={{ fontSize: '24px', fontWeight: 600, color: 'var(--color-primary-alt)' }}>Namhya Admin</div>
         </div>
 
-        {/* ── Scrollable content ── */}
-        <main style={styles.main}>
-          <div style={styles.inner}>
-            {children}
+        {/* Nav Links */}
+        <ul style={{ listStyle: 'none', padding: 0, margin: 0, flex: 1, display: 'flex', flexDirection: 'column', gap: '8px' }}>
+          {NAV_ITEMS.map(({ label, to, icon }) => (
+            <li key={label}>
+              <NavLink to={to} style={({ isActive }) => ({
+                display: 'flex', alignItems: 'center', gap: '12px',
+                padding: '12px 16px', borderRadius: '12px',
+                textDecoration: 'none', transition: 'all 0.2s ease',
+                ...(isActive || (to === '#' && false) // simple active logic
+                  ? { backgroundColor: 'var(--color-primary-container)', color: 'var(--color-on-primary-container)', fontWeight: 500 }
+                  : { color: 'var(--color-text-muted)', fontWeight: 400 })
+              })}
+              onMouseEnter={e => { if (e.currentTarget.style.backgroundColor !== 'var(--color-primary-container)') e.currentTarget.style.backgroundColor = 'var(--color-glass-bg)'; }}
+              onMouseLeave={e => { if (e.currentTarget.style.backgroundColor !== 'var(--color-primary-container)') e.currentTarget.style.backgroundColor = 'transparent'; }}
+              >
+                {icon}
+                {label}
+              </NavLink>
+            </li>
+          ))}
+        </ul>
+
+        {/* Bottom Nav Links */}
+        <ul style={{ listStyle: 'none', padding: 0, margin: 0, marginTop: 'auto', paddingTop: '24px', borderTop: '1px solid var(--color-glass-border)', display: 'flex', flexDirection: 'column', gap: '8px' }}>
+          <li>
+            <button onClick={handleLogout} style={{ width: '100%', display: 'flex', alignItems: 'center', gap: '12px', padding: '12px 16px', borderRadius: '12px', background: 'transparent', border: 'none', color: 'var(--color-text-muted)', cursor: 'pointer', transition: 'background-color 0.2s', fontSize: '16px', fontFamily: 'inherit' }} onMouseEnter={e => e.currentTarget.style.backgroundColor = 'var(--color-glass-bg)'} onMouseLeave={e => e.currentTarget.style.backgroundColor = 'transparent'}>
+              <LogOut size={20} />
+              Sign Out
+            </button>
+          </li>
+        </ul>
+      </nav>
+
+      {/* ══════════ MAIN AREA ══════════ */}
+      <main style={{ flex: 1, marginLeft: '256px', padding: '32px 40px', display: 'flex', flexDirection: 'column', maxWidth: '1600px' }}>
+        
+        {/* Top Header */}
+        <header style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '40px' }}>
+          <h1 style={{ fontSize: '40px', fontWeight: 600, letterSpacing: '-0.01em', color: 'var(--color-text-primary)', margin: 0 }}>
+            {pageTitle}
+          </h1>
+          
+          <div style={{ display: 'flex', alignItems: 'center', gap: '16px' }}>
+            <div style={{ 
+              display: 'flex', alignItems: 'center', backgroundColor: 'var(--color-bg)', 
+              border: '1px solid var(--color-glass-border)', borderRadius: '12px',
+              padding: '0 12px', width: '256px', height: '40px',
+              boxShadow: 'inset 0 2px 4px rgba(0,0,0,0.2)'
+            }}>
+              <Search size={18} style={{ color: 'var(--color-text-muted)', marginRight: '8px' }} />
+              <input type="text" placeholder="Search..." style={{ 
+                background: 'transparent', border: 'none', outline: 'none', color: 'var(--color-text-primary)', 
+                width: '100%', fontSize: '14px' 
+              }} />
+            </div>
+            
+            <button onClick={toggleTheme} style={{ 
+              display: 'flex', alignItems: 'center', justifyContent: 'center', width: '40px', height: '40px',
+              backgroundColor: 'var(--color-glass-bg)', backdropFilter: 'blur(20px)',
+              border: '1px solid var(--color-glass-border)', borderRadius: '999px',
+              color: 'var(--color-text-primary)', cursor: 'pointer', transition: 'background-color 0.2s'
+            }} onMouseEnter={e => e.currentTarget.style.backgroundColor = 'var(--color-glass-border)'} onMouseLeave={e => e.currentTarget.style.backgroundColor = 'var(--color-glass-bg)'}>
+              {theme === 'dark' ? <Sun size={20} /> : <Moon size={20} />}
+            </button>
           </div>
-        </main>
-      </div>
+        </header>
+
+        {/* Pipeline Pulse Notification */}
+        <div style={{ marginBottom: '24px' }}>
+          <PipelinePulse />
+        </div>
+
+        {/* Content Inserted Here */}
+        {children}
+      </main>
+
     </div>
   );
 }
-
-const styles = {
-  root: {
-    display: 'flex',
-    flexDirection: 'column',
-    height: '100vh',
-    overflow: 'hidden',
-  },
-  topBar: {
-    position: 'fixed',
-    top: 0,
-    left: 0,
-    right: 0,
-    height: '48px',
-    zIndex: 100,
-  },
-  body: {
-    display: 'flex',
-    flex: 1,
-    marginTop: '48px',
-    height: 'calc(100vh - 48px)',
-    overflow: 'hidden',
-  },
-  sidebar: {
-    position: 'fixed',
-    top: '48px',
-    left: 0,
-    width: '240px',
-    height: 'calc(100vh - 48px)',
-    zIndex: 90,
-    overflowY: 'auto',
-  },
-  main: {
-    marginLeft: '240px',
-    flex: 1,
-    height: '100%',
-    overflowY: 'scroll',
-  },
-  inner: {
-    padding: '32px 40px',
-    maxWidth: '1440px',
-  },
-};

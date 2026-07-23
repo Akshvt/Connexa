@@ -46,13 +46,20 @@ function csvCell(value) {
 // GET /api/leads/check-duplicate  — requirePipeline (Make.com)
 router.get('/check-duplicate', requirePipeline, async (req, res) => {
   try {
-    const { email } = req.query;
-
-    if (!email) {
-      return res.status(400).json({ error: 'email query param is required' });
+    const { email, company } = req.query;
+    
+    let exists = false;
+    
+    if (email && email.trim() !== '') {
+      // Primary check: exact email match
+      exists = await Lead.exists({ email: email.trim().toLowerCase() });
+    } else if (company && company.trim() !== '') {
+      // Fallback: fuzzy company name match (case-insensitive)
+      exists = await Lead.exists({ 
+        company: { $regex: new RegExp(company.trim(), 'i') }
+      });
     }
 
-    const exists = await Lead.exists({ email: email.trim().toLowerCase() });
     return res.json({ exists: !!exists });
   } catch (err) {
     console.error('check-duplicate error:', err);

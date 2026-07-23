@@ -4,6 +4,12 @@ A visual walkthrough of every screen in the app.
 
 ---
 
+## Landing Page
+
+![Landing page](../screenshots/screenshot-landing.png)
+
+---
+
 ## Login
 
 ![Login page](../screenshots/screenshot-login.png)

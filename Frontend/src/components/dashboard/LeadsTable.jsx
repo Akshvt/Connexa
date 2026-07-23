@@ -12,7 +12,7 @@ const COUNTRY_MAP = {
   'India': { flag: '🇮🇳', abbr: 'IN' },
 };
 
-export default function LeadsTable({ filters, setFilters, onLeadClick }) {
+export default function LeadsTable({ filters, setFilters, onLeadClick, refreshKey = 0 }) {
   const [data, setData] = useState({ leads: [], total: 0, page: 1, pages: 1 });
   const [loading, setLoading] = useState(true);
   const [copiedId, setCopiedId] = useState(null);
@@ -38,7 +38,7 @@ export default function LeadsTable({ filters, setFilters, onLeadClick }) {
       }
     }
     fetchLeads();
-  }, [filters]);
+  }, [filters, refreshKey]);
 
   const handleCopy = (e, email, id) => {
     e.stopPropagation();
@@ -108,16 +108,23 @@ export default function LeadsTable({ filters, setFilters, onLeadClick }) {
                   key={lead._id} 
                   style={styles.tr} 
                   onClick={() => onLeadClick && onLeadClick(lead)}
-                  onMouseEnter={(e) => { e.currentTarget.style.background = 'var(--color-jade-dim)'; }}
-                  onMouseLeave={(e) => { e.currentTarget.style.background = 'transparent'; }}
+                  onMouseEnter={(e) => { 
+                    e.currentTarget.style.background = 'var(--color-glass-bg)'; 
+                    const nameDiv = e.currentTarget.querySelector('.contact-name');
+                    if (nameDiv) nameDiv.style.transform = 'translateX(4px)';
+                  }}
+                  onMouseLeave={(e) => { 
+                    e.currentTarget.style.background = 'transparent'; 
+                    const nameDiv = e.currentTarget.querySelector('.contact-name');
+                    if (nameDiv) nameDiv.style.transform = 'translateX(0)';
+                  }}
                 >
                   <td style={styles.td}>
-                    <div style={styles.contactName}>{lead.fullName || 'Unknown'}</div>
-                    <div style={styles.contactDesig}>{lead.designation || '-'}</div>
+                    <div className="contact-name" style={styles.contactName}>{lead.fullName || 'Unknown'}</div>
+                    <div style={styles.contactDesig}>{lead.company || '-'}</div>
                   </td>
                   <td style={styles.td}>{lead.company || '-'}</td>
                   <td style={styles.td}>
-                    <span style={styles.flag}>{countryInfo.flag}</span>
                     {countryInfo.abbr}
                   </td>
                   <td style={styles.td}>
@@ -144,6 +151,8 @@ export default function LeadsTable({ filters, setFilters, onLeadClick }) {
                             key={st} 
                             style={styles.menuItem} 
                             onClick={(e) => handleStatusChange(e, lead._id, st)}
+                            onMouseEnter={e => e.currentTarget.style.background = 'var(--color-glass-border)'}
+                            onMouseLeave={e => e.currentTarget.style.background = 'transparent'}
                           >
                             Mark as {st.replace('_', ' ')}
                           </div>
@@ -168,11 +177,7 @@ export default function LeadsTable({ filters, setFilters, onLeadClick }) {
 
 const styles = {
   container: {
-    background: 'var(--color-surface)',
-    border: '1px solid var(--color-border)',
-    borderTop: 'none',
-    borderBottomLeftRadius: '8px',
-    borderBottomRightRadius: '8px',
+    background: 'transparent',
   },
   tableWrapper: {
     overflowX: 'auto',
@@ -184,37 +189,38 @@ const styles = {
   },
   th: {
     padding: '12px 16px',
-    fontFamily: "'Inter', sans-serif",
-    fontWeight: 500,
-    fontSize: '11px',
-    color: 'var(--color-text-muted)',
+    fontFamily: "var(--font-primary)",
+    fontWeight: 600,
+    fontSize: '14px',
+    color: 'var(--color-text-secondary)',
     textTransform: 'uppercase',
     letterSpacing: '0.05em',
-    borderBottom: '1px solid var(--color-border)',
+    borderBottom: '1px solid var(--color-glass-border)',
   },
   tr: {
-    borderBottom: '1px solid var(--color-border-light)',
+    borderBottom: '1px solid var(--color-glass-border)',
     cursor: 'pointer',
-    transition: 'background 0.15s',
+    transition: 'background 0.2s',
   },
   td: {
-    padding: '14px 16px',
-    fontFamily: "'Inter', sans-serif",
-    fontSize: '13px',
+    padding: '16px 16px',
+    fontFamily: "var(--font-primary)",
+    fontSize: '14px',
     color: 'var(--color-text-primary)',
     verticalAlign: 'middle',
   },
   contactName: {
-    fontFamily: "'Inter', sans-serif",
+    fontFamily: "var(--font-primary)",
     fontWeight: 500,
     fontSize: '14px',
     color: 'var(--color-text-primary)',
+    transition: 'transform 0.2s',
   },
   contactDesig: {
-    fontFamily: "'Inter', sans-serif",
+    fontFamily: "var(--font-primary)",
     fontWeight: 400,
-    fontSize: '12px',
-    color: 'var(--color-text-muted)',
+    fontSize: '14px',
+    color: 'var(--color-text-secondary)',
     marginTop: '2px',
   },
   flag: {
@@ -265,21 +271,24 @@ const styles = {
     right: '30px',
     top: '50%',
     transform: 'translateY(-50%)',
-    background: 'var(--color-surface-2)',
-    border: '1px solid var(--color-border)',
-    borderRadius: '6px',
+    background: 'var(--color-glass-bg)',
+    backdropFilter: 'blur(20px)',
+    border: '1px solid var(--color-glass-border)',
+    borderRadius: '12px',
     boxShadow: 'var(--shadow-card)',
     zIndex: 10,
     minWidth: '150px',
-    padding: '4px 0',
+    padding: '8px',
   },
   menuItem: {
-    padding: '8px 16px',
-    fontFamily: "'Inter', sans-serif",
-    fontSize: '12px',
+    padding: '8px 12px',
+    borderRadius: '8px',
+    fontFamily: "var(--font-primary)",
+    fontSize: '14px',
     color: 'var(--color-text-primary)',
     cursor: 'pointer',
     textTransform: 'capitalize',
+    transition: 'background 0.2s',
   },
   emptyContainer: {
     background: 'var(--color-surface)',

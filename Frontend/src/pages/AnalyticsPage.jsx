@@ -153,7 +153,7 @@ const tooltipStyle = {
   background: 'var(--color-surface-2)',
   border: '1px solid var(--color-border)',
   borderRadius: '4px',
-  color: 'white',
+  color: 'var(--color-text-primary)',
   fontFamily: "'Inter', sans-serif",
   fontSize: '12px'
 };

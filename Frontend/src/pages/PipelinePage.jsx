@@ -119,14 +119,14 @@ export default function PipelinePage() {
           animation: pulse 2.4s ease-in-out infinite;
         }
         .pipeline-box {
-          background: var(--color-surface-2, #1E2330);
-          border: 1px solid var(--color-jade, #00C896);
+          background: var(--color-surface-2);
+          border: 1px solid var(--color-glass-border);
           border-radius: 8px;
           padding: 12px 16px;
           font-family: 'Inter', sans-serif;
           font-weight: 500;
           font-size: 13px;
-          color: #fff;
+          color: var(--color-text-primary);
           text-align: center;
           white-space: nowrap;
         }
@@ -146,16 +146,16 @@ export default function PipelinePage() {
         .runs-table th {
           text-align: left;
           padding: 12px 16px;
-          color: var(--color-text-muted, #A0A8BC);
+          color: var(--color-text-muted);
           font-size: 12px;
           font-weight: 500;
-          border-bottom: 1px solid rgba(255,255,255,0.05);
+          border-bottom: 1px solid var(--color-glass-border);
         }
         .runs-table td {
           padding: 16px;
-          color: #fff;
+          color: var(--color-text-primary);
           font-size: 14px;
-          border-bottom: 1px solid rgba(255,255,255,0.05);
+          border-bottom: 1px solid var(--color-glass-border);
         }
       `}</style>
 
@@ -166,7 +166,7 @@ export default function PipelinePage() {
             fontFamily: "'Plus Jakarta Sans', sans-serif", 
             fontWeight: 700, 
             fontSize: '28px', 
-            color: '#fff', 
+            color: 'var(--color-text-primary)', 
             margin: '0 0 8px 0' 
           }}>
             Pipeline
@@ -175,7 +175,7 @@ export default function PipelinePage() {
             fontFamily: "'Inter', sans-serif", 
             fontWeight: 400, 
             fontSize: '14px', 
-            color: 'var(--color-text-muted, #A0A8BC)' 
+            color: 'var(--color-text-muted)' 
           }}>
             Automated lead generation · Tavily + Hunter + Groq
           </div>
@@ -216,7 +216,7 @@ export default function PipelinePage() {
           fontFamily: "'Inter', sans-serif", 
           fontWeight: 600, 
           fontSize: '16px', 
-          color: '#fff', 
+          color: 'var(--color-text-primary)', 
           margin: '0 0 16px 0' 
         }}>
           Recent Runs

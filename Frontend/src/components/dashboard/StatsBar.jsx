@@ -1,7 +1,7 @@
 import { useEffect, useState } from 'react';
 import api from '../../api/axios';
 
-export default function StatsBar() {
+export default function StatsBar({ refreshKey = 0 }) {
   const [stats, setStats] = useState(null);
 
   useEffect(() => {
@@ -14,7 +14,7 @@ export default function StatsBar() {
       }
     }
     fetchStats();
-  }, []);
+  }, [refreshKey]);
 
   const total = stats?.total ?? '-';
   const week = stats?.addedThisWeek ?? '-';
@@ -23,51 +23,50 @@ export default function StatsBar() {
 
   return (
     <div style={styles.container}>
-      <StatCard label="Total Leads" value={total} />
-      <StatCard label="This Week" value={`+${week}`} />
-      <StatCard label="Countries Covered" value={countries} />
-      <StatCard label="Contacted" value={contacted} />
+      <StatCard icon="group" label="Total Leads" value={total} color="var(--color-primary-alt)" />
+      <StatCard icon="trending_up" label="Leads This Week" value={`+${week}`} color="var(--color-primary-alt)" />
+      <StatCard icon="public" label="Active Markets" value={countries} color="var(--color-primary-alt)" />
+      <StatCard icon="forward_to_inbox" label="Ready for Outreach" value={contacted} color="var(--color-secondary)" />
     </div>
   );
 }
 
-function StatCard({ label, value }) {
+function StatCard({ label, value, color }) {
   return (
-    <div style={styles.card}>
-      <div style={styles.value}>{value}</div>
-      <div style={styles.label}>{label}</div>
+    <div style={{ ...styles.card, padding: '24px' }}>
+      <div style={{ display: 'flex', alignItems: 'center', gap: '8px', marginBottom: '8px' }}>
+        <div style={styles.label}>{label}</div>
+      </div>
+      <div style={{ ...styles.value, color: color === 'var(--color-secondary)' ? 'var(--color-secondary)' : 'var(--color-text-primary)' }}>{value}</div>
     </div>
   );
 }
 
 const styles = {
   container: {
-    display: 'flex',
-    gap: '16px',
+    display: 'grid',
+    gridTemplateColumns: 'repeat(auto-fit, minmax(200px, 1fr))',
+    gap: '24px',
     marginBottom: '24px',
   },
   card: {
-    flex: 1,
-    background: 'var(--color-surface)',
-    border: '1px solid var(--color-border)',
-    borderRadius: '8px',
-    padding: '20px',
-    borderLeft: '3px solid var(--color-jade)',
+    background: 'var(--color-glass-bg)',
+    backdropFilter: 'blur(20px)',
+    border: '1px solid var(--color-glass-border)',
+    borderRadius: '24px',
+    boxShadow: 'var(--shadow-card)',
   },
   value: {
-    fontFamily: "'Plus Jakarta Sans', sans-serif",
+    fontFamily: "var(--font-primary)",
     fontWeight: 700,
-    fontSize: '32px',
-    color: 'var(--color-text-primary)',
+    fontSize: '40px',
     lineHeight: 1.2,
-    marginBottom: '4px',
+    marginTop: '4px',
   },
   label: {
-    fontFamily: "'Inter', sans-serif",
+    fontFamily: "var(--font-primary)",
     fontWeight: 500,
-    fontSize: '12px',
-    color: 'var(--color-text-muted)',
-    textTransform: 'uppercase',
-    letterSpacing: '0.05em',
+    fontSize: '14px',
+    color: 'var(--color-text-secondary)',
   }
 };
