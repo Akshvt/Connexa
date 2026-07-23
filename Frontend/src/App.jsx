@@ -1,34 +1,44 @@
 import { BrowserRouter, Routes, Route, Navigate } from 'react-router-dom';
 import { AuthProvider } from './context/AuthContext.jsx';
+import { ToastProvider } from './context/ToastContext.jsx';
 import PrivateRoute from './components/PrivateRoute.jsx';
-import LoginPage from './pages/LoginPage.jsx';
+import AppShell from './components/layout/AppShell.jsx';
 
-// Placeholder for the main dashboard (to be built next)
-function DashboardPlaceholder() {
-  return (
-    <div style={{ padding: '40px', color: 'var(--color-text-primary)', fontFamily: 'Inter, sans-serif' }}>
-      <h1 style={{ color: 'var(--color-jade)' }}>Namhya LeadFlow</h1>
-      <p style={{ color: 'var(--color-text-secondary)' }}>Dashboard coming soon.</p>
-    </div>
-  );
-}
+import LoginPage from './pages/LoginPage.jsx';
+import DashboardPage from './pages/DashboardPage.jsx';
+import AnalyticsPage from './pages/AnalyticsPage.jsx';
+import PipelinePage from './pages/PipelinePage.jsx';
 
 export default function App() {
   return (
     <AuthProvider>
-      <BrowserRouter>
-        <Routes>
-          <Route path="/login" element={<LoginPage />} />
-          <Route
-            path="/*"
-            element={
-              <PrivateRoute>
-                <DashboardPlaceholder />
-              </PrivateRoute>
-            }
-          />
-        </Routes>
-      </BrowserRouter>
+      <ToastProvider>
+        <BrowserRouter>
+          <Routes>
+            {/* Public */}
+            <Route path="/login" element={<LoginPage />} />
+
+            {/* Protected — all wrapped in AppShell */}
+            <Route
+              path="/*"
+              element={
+                <PrivateRoute>
+                  <AppShell>
+                    <Routes>
+                      <Route path="/" element={<DashboardPage />} />
+                      <Route path="/analytics" element={<AnalyticsPage />} />
+                      <Route path="/pipeline" element={<PipelinePage />} />
+                      
+                      {/* Any unknown route */}
+                      <Route path="*" element={<Navigate to="/" replace />} />
+                    </Routes>
+                  </AppShell>
+                </PrivateRoute>
+              }
+            />
+          </Routes>
+        </BrowserRouter>
+      </ToastProvider>
     </AuthProvider>
   );
 }

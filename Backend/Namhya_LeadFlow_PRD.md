@@ -8,7 +8,7 @@
 | Layer | Tool | Free Limit | Notes |
 |---|---|---|---|
 | Automation | Make.com | 1,000 ops/month, 2 scenarios | N8N Cloud has no free tier |
-| Lead Discovery | Brave Search API | 2,000 queries/month, free, no card | Better than Serper — monthly reset means perpetual use |
+| Lead Discovery | Tavily | 1,000 searches/month free — already in use in Qrux | Better than Serper — monthly reset means perpetual use |
 | Email Finding | Hunter.io | 50 credits/month, free API access | Better domain search than Skrapp for our use case |
 | AI Blurb | Groq (Mixtral 8x7B) | 14,400 req/day permanently free | Open-source Mistral family, same quality |
 | Database | MongoDB Atlas M0 | 512MB free forever | |
@@ -22,7 +22,7 @@
 Make.com counts every module execution as 1 operation.
 
 Per pipeline run:
-- 5 Brave Search API searches (1 per country) = 5 ops
+- 5 Tavily searches (1 per country) = 5 ops
 - Up to 10 results per search → 50 leads max
 - Per lead: Hunter lookup + Groq call + duplicate check + save = 4 ops
 - 50 leads × 4 ops = 200 ops
@@ -37,7 +37,7 @@ For this assignment you only need 1 run. You have plenty of room.
 
 ### Initial Setup
 1. Sign up at make.com (free, no card)
-2. Sign up at api.search.brave.com — grab API key (2,500 free queries)
+2. Sign up at api.tavily.com — grab API key (2,500 free queries)
 3. Sign up at hunter.io — grab API key (50 free credits)
 4. Sign up at console.groq.com — grab API key (free, no card)
 5. Deploy your Express backend to Render first — you need the live URL before building Make scenarios
@@ -60,8 +60,9 @@ Option A — Scheduled:
 
 Option B — Webhook (for manual "Run Now" from your dashboard):
 - Module type: `Webhooks → Custom webhook`
-- Copy the webhook URL — paste it in your dashboard's Run Now button
-- Your React frontend sends a POST to this URL when founder clicks Run Now
+- Make will generate a URL like `https://hook.eu1.make.com/abc123xyz`
+- **Save this URL** — you'll add it to your frontend `.env` as `VITE_MAKE_WEBHOOK_URL` in Phase 3
+- Do NOT worry about the frontend yet — just copy and save the URL for now
 
 Connect both triggers into a `Router` module so either one kicks off the same pipeline.
 
@@ -90,44 +91,46 @@ Connect both triggers into a `Router` module so either one kicks off the same pi
 
 ---
 
-**Module 4 — Search via Brave Search API**
+**Module 4 — Search via Tavily**
 - Module type: `HTTP → Make a request`
-- Method: GET
-- URL: `https://api.search.brave.com/res/v1/web/search`
-- Query string parameters:
-  - `q` : `{{3.value}}`
-  - `count` : `10`
+- Method: POST
+- URL: `https://api.tavily.com/search`
 - Headers:
-  - `X-Subscription-Token` : `YOUR_BRAVE_KEY`
-  - `Accept` : `application/json`
-- Body: none (GET request)
+  - `Content-Type` : `application/json`
+- Body type: Raw (JSON)
+- Body:
+```json
+{
+  "api_key": "YOUR_TAVILY_KEY",
+  "query": "{{3.value}}",
+  "max_results": 10,
+  "search_depth": "advanced"
+}
+```
 - Parse response: Yes
 
-Brave returns `web.results[]`. Each item has: `title`, `url`, `description`, `extra_snippets`.
+Tavily returns `results[]`. Each item has: `title`, `url`, `content`, `score`.
 
 ---
 
 **Module 5 — Extract company data from results**
 - Module type: `Flow Control → Iterator`
-- Array: `{{4.web.results}}` (the results array from Brave)
+- Array: `{{4.results}}` (the results array from Tavily)
 - Now each bundle = one search result (company)
 
 ---
 
-**Module 6 — Clean company name from title**
+**Module 6 — Extract company details**
 - Module type: `Tools → Set multiple variables`
-- Set these variables from `{{5.value}}`:
+- Add 3 variables, all mapped from the Iterator (Module 7) Value fields:
 
-| Variable | Value |
+| Variable name | Value |
 |---|---|
-| `companyName` | Use text functions to strip " - LinkedIn", " \| " suffixes from title |
-| `companyWebsite` | `{{5.value.url}}` — the result URL (Brave uses `url` not `link`) |
-| `snippet` | `{{5.value.description}}` — Brave uses `description` not `snippet` |
-| `displayedDomain` | `{{5.value.displayedLink}}` — cleaner domain |
-| `country` | Extract from which iteration we're on (pass from Module 3) |
+| `companyName` | Iterator → Value → `title` |
+| `companyWebsite` | Iterator → Value → `url` |
+| `companyDescription` | Iterator → Value → `content` |
 
-To clean company name in Make, use:
-`{{replace(replace(5.value.title; " - LinkedIn"; ""); " | "; " ")}}` then trim.
+Pick the fields that show actual data (url, title, content at the bottom of the variable picker, not the schema labels at the top).
 
 ---
 
@@ -215,8 +218,8 @@ Response will be `{ "exists": true }` or `{ "exists": false }`.
 | `company` | `{{6.companyName}}` |
 | `designation` | `{{7.data.emails[].position}}` |
 | `country` | `{{6.country}}` |
-| `city` | Leave blank (Brave Search API doesn't always give city) |
-| `source` | `"Brave Search API"` |
+| `city` | Leave blank (Tavily doesn't always give city) |
+| `source` | `"Tavily"` |
 | `email` | `{{7.data.emails[].value}}` |
 | `linkedinUrl` | `""` (LinkedIn scraping out of scope for free) |
 | `companyWebsite` | `{{6.companyWebsite}}` |
@@ -307,7 +310,7 @@ const LeadSchema = new mongoose.Schema({
     required: true
   },
   city:           { type: String, default: '' },
-  source:         { type: String, default: 'Brave Search API / Google Search' },
+  source:         { type: String, default: 'Tavily / Google Search' },
   email:          { type: String, default: '' },
   linkedinUrl:    { type: String, default: '' },
   companyWebsite: { type: String, default: '' },
@@ -748,13 +751,13 @@ Tooltip: dark card with `var(--color-surface-2)` background, white text.
 Page title + trigger section:
 ┌────────────────────────────────────────────────────────────────┐
 │  Pipeline                                                      │
-│  Automated lead generation · Powered by Brave Search API + Hunter + Groq│
+│  Automated lead generation · Powered by Tavily + Hunter + Groq│
 │                                                    [▶ Run Now] │
 └────────────────────────────────────────────────────────────────┘
 
 Pipeline steps visual (horizontal, static — just shows the flow):
 ┌──────────┐    ┌──────────┐    ┌──────────┐    ┌──────────┐    ┌──────────┐
-│ Brave Search API   │ →  │ Hunter   │ →  │ Groq     │ →  │ Filter   │ →  │ Dashboard│
+│ Tavily   │ →  │ Hunter   │ →  │ Groq     │ →  │ Filter   │ →  │ Dashboard│
 │ Search   │    │ Email    │    │ Blurb    │    │ Dedupe   │    │ Save     │
 │ Google   │    │ Lookup   │    │ Generate │    │          │    │          │
 └──────────┘    └──────────┘    └──────────┘    └──────────┘    └──────────┘
@@ -848,7 +851,7 @@ Width: `440px` on desktop, full width on mobile.
 │                                                 │
 │  SOURCE & META                                  │
 │  ──────────────────────────────────────────     │
-│  Source:  Brave Search API / Google Search            │  ← Inter 12px muted
+│  Source:  Tavily / Google Search            │  ← Inter 12px muted
 │  Added:   July 22, 2026                         │
 │  Country: United States                         │
 └────────────────────────────────────────────────┘
@@ -1059,7 +1062,7 @@ Work in one Antigravity session throughout. Keep context alive.
 Get all accounts and keys ready first. Antigravity will ask for them:
 
 1. **MongoDB Atlas** → create free M0 cluster → copy the connection string
-2. **Brave Search API** → api.search.brave.com → copy API key
+2. **Tavily** → api.tavily.com → copy API key
 3. **Hunter.io** → hunter.io → copy API key
 4. **Groq** → console.groq.com → copy API key
 5. **Render** → render.com → create account (deploy later)
@@ -1250,7 +1253,7 @@ Start a new Antigravity session or continue the same one. Either way, paste the 
 >
 > Top section: page title + subtitle + Run Now button. Run Now sends POST to VITE_MAKE_WEBHOOK_URL, button changes to '● Running...' with jade pulse animation, polls GET /api/pipeline-runs/latest every 5 seconds until status is 'completed', then shows toast and resets button.
 >
-> Pipeline flow diagram: a static horizontal row of 5 boxes connected by arrows: Brave Search → Hunter Email → Groq Blurb → Dedupe Filter → Dashboard. Boxes use surface-2 background with jade border. Arrows are just → symbols in jade color.
+> Pipeline flow diagram: a static horizontal row of 5 boxes connected by arrows: Tavily Search → Hunter Email → Groq Blurb → Dedupe Filter → Dashboard. Boxes use surface-2 background with jade border. Arrows are just → symbols in jade color.
 >
 > Run history: fetches GET /api/pipeline-runs, shows table with columns: Date, Leads Added, Status (badge), Triggered By, Duration (completedAt - startedAt in seconds)."
 
@@ -1296,21 +1299,21 @@ Each prompt is scoped tightly — don't combine them or Antigravity loses focus.
 ## PART 10 — THE 1-PAGE SUBMISSION NOTE
 
 **How the pipeline works**
-Make.com runs on a daily schedule (and on-demand via webhook). It queries Brave Search API for wellness, food distribution, and Ayurveda-adjacent companies across 5 target markets. Each search result is enriched with verified contact emails via Hunter.io's domain search API. Groq's free inference API (Mixtral 8x7B model) generates a 2-sentence, company-specific relevance note for Namhya Foods. A duplicate check against the live database prevents re-importing known leads. Everything lands in MongoDB and surfaces in a custom React dashboard — no manual data entry.
+Make.com runs on a daily schedule (and on-demand via webhook). It queries Tavily for wellness, food distribution, and Ayurveda-adjacent companies across 5 target markets. Each search result is enriched with verified contact emails via Hunter.io's domain search API. Groq's free inference API (Mixtral 8x7B model) generates a 2-sentence, company-specific relevance note for Namhya Foods. A duplicate check against the live database prevents re-importing known leads. Everything lands in MongoDB and surfaces in a custom React dashboard — no manual data entry.
 
 **Tools used and why**
-Brave Search API — most generous free SERP API (2,000 queries/month recurring), clean JSON, no card required.
+Tavily — most generous free SERP API (1,000 searches/month free), clean JSON, no card required.
 Hunter.io — confirmed free API access, best-in-class for domain-based email discovery.
 Groq — 14,400 free requests/day permanently, runs Mixtral 8x7B (open-source Mistral), faster and more free than any alternative.
 Make.com — 1,000 free ops/month, visual workflow builder, no self-hosting required.
 MongoDB Atlas + Express + React — custom dashboard because it signals more initiative than Airtable.
 
 **How to scale to 200+ leads/month**
-Add more Brave Search API search queries targeting niche verticals (functional beverages, ethnic grocery chains, supplement importers). Upgrade Hunter.io to Starter ($34/month, 1,000 credits). Schedule Make.com to run 3x/week. Add a second Make scenario that scrapes LinkedIn company pages for decision-maker profiles. Expand target countries to Singapore and Germany as Namhya grows.
+Add more Tavily search queries targeting niche verticals (functional beverages, ethnic grocery chains, supplement importers). Upgrade Hunter.io to Starter ($34/month, 1,000 credits). Schedule Make.com to run 3x/week. Add a second Make scenario that scrapes LinkedIn company pages for decision-maker profiles. Expand target countries to Singapore and Germany as Namhya grows.
 
 **Limitations encountered and workarounds**
-Brave Search API returns page titles and URLs, not structured contact data — Hunter.io fills the gap by extracting emails from company domains.
-Hunter.io free tier is 50 credits/month — prioritised the highest-relevance results from each Brave Search API query to avoid waste.
+Tavily returns rich content per result but not structured contact data — Hunter.io fills the gap by extracting emails from company domains.
+Hunter.io free tier is 50 credits/month — prioritised the highest-relevance results from each Tavily query to avoid waste.
 Groq has a per-minute token limit — added a 1-second delay between Groq calls in Make to stay within 6,000 TPM.
 Render's free backend sleeps after inactivity — added a Make warmup ping scenario that hits `/api/health` every 10 minutes.
 
