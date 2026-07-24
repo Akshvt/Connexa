@@ -89,12 +89,12 @@ export default function LeadsTable({ filters, setFilters, onLeadClick, refreshKe
           <thead>
             <tr>
               <th style={styles.th}>Contact</th>
-              <th style={styles.th}>Company</th>
+              <th className="leads-th-company" style={styles.th}>Company</th>
               <th style={styles.th}>Country</th>
               <th style={styles.th}>Email</th>
-              <th style={styles.th}>Channel</th>
+              <th className="leads-th-channel" style={styles.th}>Channel</th>
               <th style={styles.th}>Status</th>
-              <th style={styles.th}>Added</th>
+              <th className="leads-th-added" style={styles.th}>Added</th>
               <th style={{ ...styles.th, width: '40px', textAlign: 'center' }}></th>
             </tr>
           </thead>
@@ -123,7 +123,7 @@ export default function LeadsTable({ filters, setFilters, onLeadClick, refreshKe
                     <div className="contact-name" style={styles.contactName}>{lead.fullName || 'Unknown'}</div>
                     <div style={styles.contactDesig}>{lead.company || '-'}</div>
                   </td>
-                  <td style={styles.td}>{lead.company || '-'}</td>
+                  <td className="leads-td-company" style={styles.td}>{lead.company || '-'}</td>
                   <td style={styles.td}>
                     {countryInfo.abbr}
                   </td>
@@ -137,9 +137,9 @@ export default function LeadsTable({ filters, setFilters, onLeadClick, refreshKe
                       )}
                     </div>
                   </td>
-                  <td style={styles.td}>{lead.outreachChannel || '-'}</td>
+                  <td className="leads-td-channel" style={styles.td}>{lead.outreachChannel || '-'}</td>
                   <td style={styles.td}><StatusBadge status={lead.status} /></td>
-                  <td style={{ ...styles.td, color: 'var(--color-text-muted)' }}>{addedDate}</td>
+                  <td className="leads-td-added" style={{ ...styles.td, color: 'var(--color-text-muted)' }}>{addedDate}</td>
                   <td style={{ ...styles.td, position: 'relative' }}>
                     <button style={styles.actionBtn} onClick={(e) => handleMenuToggle(e, lead._id)}>
                       <MoreHorizontal size={16} />

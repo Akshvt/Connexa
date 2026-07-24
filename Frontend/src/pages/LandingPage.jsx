@@ -45,11 +45,11 @@ export default function LandingPage() {
         </div>
 
         {/* Hero Content */}
-        <div style={{ position: 'relative', zIndex: 10, maxWidth: '1280px', margin: '0 auto', padding: '0 32px', width: '100%', display: 'flex', flexDirection: 'column', alignItems: 'center', textAlign: 'center' }}>
+        <div className="landing-hero-content" style={{ position: 'relative', zIndex: 10 }}>
           <FadeUp>
-            <h1 style={{ display: 'flex', flexDirection: 'column' }}>
-              <span style={{ opacity: 1 }}>Namhya's Pathway</span>
-              <span style={{ opacity: 0.4 }}>to Global</span>
+            <h1 style={{ lineHeight: 1.1 }}>
+              <span style={{ opacity: 1 }}>Namhya's Pathway </span>
+              <span style={{ opacity: 0.4 }}>to Global </span>
               <span style={{ color: 'var(--color-primary)' }}>Expansion.</span>
             </h1>
           </FadeUp>
@@ -61,7 +61,7 @@ export default function LandingPage() {
           </FadeUp>
 
           <FadeUp delay={200}>
-            <div style={{ marginTop: '48px', display: 'flex', alignItems: 'center', gap: '24px' }}>
+            <div className="landing-hero-cta">
               <Link to="/login">
                 <button style={{
                   backgroundColor: 'var(--color-primary)', color: '#FFFFFF',
@@ -117,8 +117,8 @@ export default function LandingPage() {
       </header>
 
       {/* ═══════════════ HOW IT WORKS — Vertical Timeline ═══════════════ */}
-      <section id="how-it-works" style={{ padding: '120px 32px', position: 'relative', zIndex: 10, backgroundColor: 'var(--color-bg)' }}>
-        <div style={{ maxWidth: '1280px', margin: '0 auto' }}>
+      <section id="how-it-works" className="landing-section" style={{ position: 'relative', zIndex: 10, backgroundColor: 'var(--color-bg)' }}>
+        <div className="landing-section-content" style={{ maxWidth: '1280px', margin: '0 auto' }}>
           <FadeUp>
             <div style={{ textAlign: 'center', marginBottom: '80px' }}>
               <h2 style={{ fontSize: 'clamp(40px, 5vw, 64px)', fontWeight: 700, letterSpacing: '-0.02em', marginBottom: '24px' }}>Technical Architecture</h2>
@@ -137,13 +137,11 @@ export default function LandingPage() {
             <div style={{ display: 'flex', flexDirection: 'column', gap: '48px' }}>
               {pipelineSteps.map((step, idx) => (
                 <FadeUp key={idx} delay={idx * 80}>
-                  <div style={{
-                    display: 'flex', alignItems: 'center', justifyContent: 'space-between',
+                  <div className="landing-timeline-step" style={{
                     flexDirection: idx % 2 === 0 ? 'row' : 'row-reverse',
-                    gap: '48px',
                   }}>
                     {/* Card side */}
-                    <div style={{ flex: '0 0 calc(50% - 48px)', maxWidth: 'calc(50% - 48px)' }}>
+                    <div className="landing-timeline-card-wrapper">
                       <div style={{
                         background: 'var(--landing-glass-bg)',
                         backdropFilter: 'blur(20px)',
@@ -160,7 +158,7 @@ export default function LandingPage() {
                     </div>
 
                     {/* Center icon */}
-                    <div style={{
+                    <div className="landing-timeline-icon" style={{
                       width: '48px', height: '48px', borderRadius: '50%', flexShrink: 0,
                       background: 'var(--color-bg)',
                       border: '1px solid var(--landing-icon-border)',
@@ -171,7 +169,7 @@ export default function LandingPage() {
                     }}>{step.icon}</div>
 
                     {/* Empty side */}
-                    <div style={{ flex: '0 0 calc(50% - 48px)' }} />
+                    <div className="landing-timeline-spacer" />
                   </div>
                 </FadeUp>
               ))}
@@ -181,19 +179,18 @@ export default function LandingPage() {
       </section>
 
       {/* ═══════════════ TECH STACK ═══════════════ */}
-      <section style={{
-        padding: '120px 32px',
+      <section className="landing-section" style={{
         backgroundColor: 'var(--color-bg-elevated)',
         borderTop: '1px solid var(--landing-glass-border)',
         position: 'relative', zIndex: 10,
       }}>
-        <div style={{ maxWidth: '1280px', margin: '0 auto' }}>
+        <div className="landing-section-content" style={{ maxWidth: '1280px', margin: '0 auto' }}>
           <FadeUp>
             <h2 style={{ fontSize: '40px', fontWeight: 600, letterSpacing: '-0.01em', textAlign: 'center', marginBottom: '48px' }}>Technology Stack</h2>
           </FadeUp>
 
           <FadeUp delay={100}>
-            <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(160px, 1fr))', gap: '24px' }}>
+            <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(140px, 1fr))', gap: '24px' }}>
               {techStack.map((item, idx) => (
                 <div key={idx} style={{
                   background: 'var(--landing-glass-bg)',

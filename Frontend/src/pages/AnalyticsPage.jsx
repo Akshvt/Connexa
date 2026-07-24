@@ -44,10 +44,10 @@ export default function AnalyticsPage() {
         <p style={styles.subtitle}>Performance across markets</p>
       </header>
 
-      <div style={styles.grid}>
+      <div className="analytics-grid" style={styles.grid}>
         
         {/* 1. Horizontal BarChart (Leads by Country) */}
-        <div style={styles.card}>
+        <div className="analytics-card" style={styles.card}>
           <h3 style={styles.cardTitle}>Leads by Country</h3>
           <div style={styles.chartWrapper}>
             <ResponsiveContainer width="100%" height="100%">
@@ -67,7 +67,7 @@ export default function AnalyticsPage() {
         </div>
 
         {/* 2. PieChart (Donut) (Outreach Channel) */}
-        <div style={styles.card}>
+        <div className="analytics-card" style={styles.card}>
           <h3 style={styles.cardTitle}>Channel Breakdown</h3>
           <div style={styles.chartWrapper}>
             <ResponsiveContainer width="100%" height="100%">
@@ -94,7 +94,7 @@ export default function AnalyticsPage() {
         </div>
 
         {/* 3. BarChart (Status Funnel) */}
-        <div style={styles.card}>
+        <div className="analytics-card" style={styles.card}>
           <h3 style={styles.cardTitle}>Status Funnel</h3>
           <div style={styles.chartWrapper}>
             <ResponsiveContainer width="100%" height="100%">
@@ -114,7 +114,7 @@ export default function AnalyticsPage() {
         </div>
 
         {/* 4. LineChart (Leads Added per Day) */}
-        <div style={styles.card}>
+        <div className="analytics-card" style={styles.card}>
           <h3 style={styles.cardTitle}>Leads Added (Last 14 Days)</h3>
           <div style={styles.chartWrapper}>
             <ResponsiveContainer width="100%" height="100%">

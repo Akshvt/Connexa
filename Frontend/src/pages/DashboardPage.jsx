@@ -72,8 +72,8 @@ export default function DashboardPage() {
 
   return (
     <div className="animate-fade-in-up" style={{ width: '100%' }}>
-      <header style={{ display: 'flex', justifyContent: 'flex-end', alignItems: 'center', marginBottom: '32px' }}>
-        <div style={{ display: 'flex', gap: '12px' }}>
+      <header className="dashboard-header" style={{ display: 'flex', justifyContent: 'flex-end', alignItems: 'center', marginBottom: '32px' }}>
+        <div className="dashboard-actions" style={{ display: 'flex', gap: '12px' }}>
           <Button variant="secondary" onClick={handleExport}>
             <Download size={14} style={{ marginRight: '8px' }} />
             Export CSV

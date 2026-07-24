@@ -8,7 +8,7 @@ export default function DocsPage() {
   return (
     <div style={{ backgroundColor: 'var(--color-bg)', minHeight: '100vh', overflowX: 'hidden', color: 'var(--color-text-primary)' }}>
       <Navbar />
-      <div style={{ maxWidth: '900px', margin: '0 auto', padding: '120px 40px 80px' }} className="markdown-body">
+      <div className="docs-container markdown-body" style={{ maxWidth: '900px', margin: '0 auto', padding: '120px 40px 80px' }}>
         <style>{`
           .markdown-body {
             color: var(--color-text-primary);

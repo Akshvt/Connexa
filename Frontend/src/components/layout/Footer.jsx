@@ -1,18 +1,16 @@
 import React from 'react';
 
 const Footer = () => {
-  const footerStyle = {
-    padding: 'var(--spacing-section) var(--spacing-xxl)',
-    borderTop: '1px solid var(--color-border)',
-    display: 'flex',
-    justifyContent: 'space-between',
-    alignItems: 'center',
-    backgroundColor: 'var(--color-bg)',
-    color: 'var(--color-text-secondary)',
-  };
-
   return (
-    <footer style={footerStyle}>
+    <footer className="site-footer" style={{
+      padding: 'var(--spacing-section) var(--spacing-xxl)',
+      borderTop: '1px solid var(--color-border)',
+      display: 'flex',
+      justifyContent: 'space-between',
+      alignItems: 'center',
+      backgroundColor: 'var(--color-bg)',
+      color: 'var(--color-text-secondary)',
+    }}>
       <div style={{ display: 'flex', alignItems: 'center', gap: '8px', color: 'var(--color-text-primary)', fontWeight: '600' }}>
         <div style={{ width: '20px', height: '20px', borderRadius: '4px', backgroundColor: 'var(--color-primary)', opacity: 0.5 }}></div>
         Connexa by Namhya

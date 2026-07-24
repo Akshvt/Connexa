@@ -21,9 +21,9 @@ export default function FilterBar({ filters, setFilters }) {
   };
 
   return (
-    <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', flexWrap: 'wrap', gap: '16px', marginBottom: '16px' }}>
+    <div className="filter-bar" style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', flexWrap: 'wrap', gap: '16px', marginBottom: '16px' }}>
       {/* Pill buttons for Country */}
-      <div style={{ display: 'flex', gap: '8px', flexWrap: 'wrap' }}>
+      <div className="filter-pills" style={{ display: 'flex', gap: '8px', flexWrap: 'wrap' }}>
         {COUNTRIES.map(country => {
           const isActive = filters.country === country.value;
           return (
@@ -53,7 +53,7 @@ export default function FilterBar({ filters, setFilters }) {
       </div>
 
       {/* Selects styled cleanly for the right side */}
-      <div style={{ display: 'flex', alignItems: 'center', gap: '12px' }}>
+      <div className="filter-selects" style={{ display: 'flex', alignItems: 'center', gap: '12px' }}>
         <div style={{ display: 'flex', alignItems: 'center', gap: '8px', color: 'var(--color-text-secondary)' }}>
           <Filter size={18} />
           <span style={{ fontSize: '14px', fontWeight: 500 }}>More Filters:</span>

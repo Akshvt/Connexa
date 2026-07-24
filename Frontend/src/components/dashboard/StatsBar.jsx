@@ -22,7 +22,7 @@ export default function StatsBar({ refreshKey = 0 }) {
   const contacted = stats?.contacted ?? '-';
 
   return (
-    <div style={styles.container}>
+    <div className="stats-grid" style={styles.container}>
       <StatCard icon="group" label="Total Leads" value={total} color="var(--color-primary-alt)" />
       <StatCard icon="trending_up" label="Leads This Week" value={`+${week}`} color="var(--color-primary-alt)" />
       <StatCard icon="public" label="Active Markets" value={countries} color="var(--color-primary-alt)" />
@@ -33,11 +33,11 @@ export default function StatsBar({ refreshKey = 0 }) {
 
 function StatCard({ label, value, color }) {
   return (
-    <div style={{ ...styles.card, padding: '24px' }}>
+    <div className="stat-card" style={{ ...styles.card, padding: '24px' }}>
       <div style={{ display: 'flex', alignItems: 'center', gap: '8px', marginBottom: '8px' }}>
         <div style={styles.label}>{label}</div>
       </div>
-      <div style={{ ...styles.value, color: color === 'var(--color-secondary)' ? 'var(--color-secondary)' : 'var(--color-text-primary)' }}>{value}</div>
+      <div className="stat-value" style={{ ...styles.value, color: color === 'var(--color-secondary)' ? 'var(--color-secondary)' : 'var(--color-text-primary)' }}>{value}</div>
     </div>
   );
 }

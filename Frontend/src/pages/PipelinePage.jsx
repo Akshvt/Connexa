@@ -82,7 +82,7 @@ export default function PipelinePage() {
   };
 
   return (
-    <div style={{ padding: '32px', maxWidth: '1000px', margin: '0 auto' }}>
+    <div className="pipeline-page" style={{ padding: '32px', maxWidth: '1000px', margin: '0 auto' }}>
       <style>{`
         @keyframes pulse {
           0%, 100% { opacity: 1; transform: scale(1); box-shadow: 0 0 0 0 rgba(0, 200, 150, 0.5); }
@@ -160,7 +160,7 @@ export default function PipelinePage() {
       `}</style>
 
       {/* Top Section */}
-      <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', marginBottom: '48px' }}>
+      <div className="pipeline-header" style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', marginBottom: '48px' }}>
         <div>
           <h1 style={{ 
             fontFamily: "'Plus Jakarta Sans', sans-serif", 

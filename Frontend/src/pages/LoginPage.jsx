@@ -71,7 +71,7 @@ export default function LoginPage() {
         position: 'relative', zIndex: 10, padding: '96px 16px',
       }}>
         {/* Login Card */}
-        <div style={{
+        <div className="login-card" style={{
           width: '100%', maxWidth: '448px',
           background: 'var(--landing-glass-bg)',
           backdropFilter: 'blur(20px)', WebkitBackdropFilter: 'blur(20px)',

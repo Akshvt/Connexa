@@ -50,8 +50,8 @@ export default function LeadModal({ lead, onClose, onUpdate }) {
 
   return (
     <>
-      <div style={styles.backdrop} onClick={onClose} />
-      <div style={styles.drawer}>
+      <div className="lead-modal-backdrop" style={styles.backdrop} onClick={onClose} />
+      <div className="lead-modal-drawer" style={styles.drawer}>
         
         {/* Header */}
         <div style={styles.header}>

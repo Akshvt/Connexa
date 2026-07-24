@@ -1,17 +1,16 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { NavLink, useNavigate, useLocation } from 'react-router-dom';
 import { useAuth } from '../../context/AuthContext.jsx';
 import { 
   LayoutDashboard, 
-  Users, 
   Zap, 
   BarChart3, 
-  Settings, 
-  HelpCircle, 
   LogOut,
   Search,
   Sun,
-  Moon
+  Moon,
+  Menu,
+  X
 } from 'lucide-react';
 import PipelinePulse from './PipelinePulse.jsx';
 
@@ -22,11 +21,38 @@ const NAV_ITEMS = [
 ];
 
 export default function AppShell({ children }) {
-  const { logout, token } = useAuth();
+  const { logout } = useAuth();
   const navigate = useNavigate();
   const location = useLocation();
   
   const [theme, setTheme] = useState(document.documentElement.getAttribute('data-theme') || 'dark');
+  const [sidebarOpen, setSidebarOpen] = useState(false);
+
+  // Close sidebar on route change
+  useEffect(() => {
+    setSidebarOpen(false);
+  }, [location.pathname]);
+
+  // Close sidebar on resize to desktop
+  useEffect(() => {
+    const handleResize = () => {
+      if (window.innerWidth > 1024) {
+        setSidebarOpen(false);
+      }
+    };
+    window.addEventListener('resize', handleResize);
+    return () => window.removeEventListener('resize', handleResize);
+  }, []);
+
+  // Prevent body scroll when sidebar is open on mobile
+  useEffect(() => {
+    if (sidebarOpen) {
+      document.body.style.overflow = 'hidden';
+    } else {
+      document.body.style.overflow = '';
+    }
+    return () => { document.body.style.overflow = ''; };
+  }, [sidebarOpen]);
 
   const toggleTheme = () => {
     const newTheme = theme === 'dark' ? 'light' : 'dark';
@@ -48,8 +74,14 @@ export default function AppShell({ children }) {
   return (
     <div style={{ display: 'flex', minHeight: '100vh', backgroundColor: 'var(--color-bg)', color: 'var(--color-text-primary)' }}>
       
+      {/* ══════════ SIDEBAR OVERLAY (mobile/tablet) ══════════ */}
+      <div 
+        className={`app-sidebar-overlay ${sidebarOpen ? 'open' : ''}`}
+        onClick={() => setSidebarOpen(false)} 
+      />
+
       {/* ══════════ SIDEBAR ══════════ */}
-      <nav style={{
+      <nav className={`app-sidebar ${sidebarOpen ? 'open' : ''}`} style={{
         display: 'flex', flexDirection: 'column', width: '256px', position: 'fixed', left: 0, top: 0, bottom: 0,
         backgroundColor: 'var(--color-sidebar-bg)', 
         borderRight: '1px solid var(--color-glass-border)',
@@ -57,8 +89,16 @@ export default function AppShell({ children }) {
         boxShadow: 'var(--shadow-card)',
       }}>
         {/* Brand */}
-        <div style={{ marginBottom: '32px', paddingLeft: '8px' }}>
+        <div style={{ marginBottom: '32px', paddingLeft: '8px', display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
           <div style={{ fontSize: '24px', fontWeight: 600, color: 'var(--color-primary-alt)' }}>Namhya Admin</div>
+          {/* Close button — visible only on mobile/tablet via CSS */}
+          <button 
+            className="hamburger-btn"
+            onClick={() => setSidebarOpen(false)}
+            style={{ width: '32px', height: '32px', borderRadius: '8px' }}
+          >
+            <X size={18} />
+          </button>
         </div>
 
         {/* Nav Links */}
@@ -69,7 +109,7 @@ export default function AppShell({ children }) {
                 display: 'flex', alignItems: 'center', gap: '12px',
                 padding: '12px 16px', borderRadius: '12px',
                 textDecoration: 'none', transition: 'all 0.2s ease',
-                ...(isActive || (to === '#' && false) // simple active logic
+                ...(isActive
                   ? { backgroundColor: 'var(--color-primary-container)', color: 'var(--color-on-primary-container)', fontWeight: 500 }
                   : { color: 'var(--color-text-muted)', fontWeight: 400 })
               })}
@@ -95,25 +135,34 @@ export default function AppShell({ children }) {
       </nav>
 
       {/* ══════════ MAIN AREA ══════════ */}
-      <main style={{ flex: 1, marginLeft: '256px', padding: '32px 40px', display: 'flex', flexDirection: 'column', maxWidth: '1600px' }}>
+      <main className="app-main" style={{ flex: 1, marginLeft: '256px', padding: '32px 40px', display: 'flex', flexDirection: 'column', maxWidth: '1600px' }}>
         
         {/* Top Header */}
-        <header style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '40px' }}>
-          <h1 style={{ fontSize: '40px', fontWeight: 600, letterSpacing: '-0.01em', color: 'var(--color-text-primary)', margin: 0 }}>
-            {pageTitle}
-          </h1>
-          
+        <header className="app-header" style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '40px' }}>
           <div style={{ display: 'flex', alignItems: 'center', gap: '16px' }}>
-            <div style={{ 
+            {/* Hamburger — visible only on mobile/tablet via CSS */}
+            <button 
+              className="hamburger-btn"
+              onClick={() => setSidebarOpen(true)}
+            >
+              <Menu size={20} />
+            </button>
+            <h1 style={{ fontSize: '40px', fontWeight: 600, letterSpacing: '-0.01em', color: 'var(--color-text-primary)', margin: 0 }}>
+              {pageTitle}
+            </h1>
+          </div>
+          
+          <div className="app-header-actions" style={{ display: 'flex', alignItems: 'center', gap: '16px' }}>
+            <div className="app-header-search" style={{ 
               display: 'flex', alignItems: 'center', backgroundColor: 'var(--color-bg)', 
               border: '1px solid var(--color-glass-border)', borderRadius: '12px',
               padding: '0 12px', width: '256px', height: '40px',
               boxShadow: 'inset 0 2px 4px rgba(0,0,0,0.2)'
             }}>
-              <Search size={18} style={{ color: 'var(--color-text-muted)', marginRight: '8px' }} />
+              <Search size={18} style={{ color: 'var(--color-text-muted)', marginRight: '8px', flexShrink: 0 }} />
               <input type="text" placeholder="Search..." style={{ 
                 background: 'transparent', border: 'none', outline: 'none', color: 'var(--color-text-primary)', 
-                width: '100%', fontSize: '14px' 
+                width: '100%', fontSize: '14px', minWidth: 0
               }} />
             </div>
             
@@ -121,7 +170,8 @@ export default function AppShell({ children }) {
               display: 'flex', alignItems: 'center', justifyContent: 'center', width: '40px', height: '40px',
               backgroundColor: 'var(--color-glass-bg)', backdropFilter: 'blur(20px)',
               border: '1px solid var(--color-glass-border)', borderRadius: '999px',
-              color: 'var(--color-text-primary)', cursor: 'pointer', transition: 'background-color 0.2s'
+              color: 'var(--color-text-primary)', cursor: 'pointer', transition: 'background-color 0.2s',
+              flexShrink: 0
             }} onMouseEnter={e => e.currentTarget.style.backgroundColor = 'var(--color-glass-border)'} onMouseLeave={e => e.currentTarget.style.backgroundColor = 'var(--color-glass-bg)'}>
               {theme === 'dark' ? <Sun size={20} /> : <Moon size={20} />}
             </button>

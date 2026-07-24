@@ -1,6 +1,6 @@
 import React from 'react';
 
-const Button = ({ children, variant = 'primary', className = '', ...props }) => {
+const Button = ({ children, variant = 'primary', className = '', style = {}, ...props }) => {
   const baseStyle = {
     display: 'inline-flex',
     alignItems: 'center',
@@ -53,7 +53,7 @@ const Button = ({ children, variant = 'primary', className = '', ...props }) => 
       <style>{hoverStyles}</style>
       <button 
         className={`btn-custom btn-${variant} ${className}`} 
-        style={{ ...baseStyle, ...variants[variant] }} 
+        style={{ ...baseStyle, ...variants[variant], ...style }} 
         {...props}
       >
         {children}

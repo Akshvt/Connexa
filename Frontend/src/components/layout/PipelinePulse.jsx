@@ -88,7 +88,7 @@ export default function PipelinePulse() {
   const text = getPulseText(run);
 
   return (
-    <div style={styles.bar}>
+    <div className="pulse-bar" style={styles.bar}>
       {/* Left cluster: dot + text */}
       <div style={styles.left}>
         <span
@@ -98,7 +98,7 @@ export default function PipelinePulse() {
             animation: dot.animation,
           }}
         />
-        <span style={styles.text}>{text}</span>
+        <span className="pulse-text" style={styles.text}>{text}</span>
       </div>
 
       {/* Right: Run Now */}
